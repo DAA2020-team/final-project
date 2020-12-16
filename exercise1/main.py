@@ -13,19 +13,20 @@ import argparse
 def init_parameter():
     """
     Create argument parser.
-    usage: main.py [-h] [-k K] [-c1 C1] [-c2 C2]
+    usage: main.py [-h] k c1 c2
     (k, c1, c2)-cover for MultiWaySearchTree storing currency codes
+    positional arguments:
+      k           the number of codes to cover at least
+      c1          lower bound for the codes in the cover
+      c2          upper bound for the codes in the cover
     optional arguments:
       -h, --help  show this help message and exit
-      -k K        the number of codes to cover at least
-      -c1 C1      lower bound for the codes in the cover
-      -c2 C2      upper bound for the codes in the cover
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='(k, c1, c2)-cover for MultiWaySearchTree storing currency codes')
-    parser.add_argument("-k", type=int, help="the number of codes to cover at least")
-    parser.add_argument("-c1", type=str, help="lower bound for the codes in the cover")
-    parser.add_argument("-c2", type=str, help="upper bound for the codes in the cover")
+    parser.add_argument("k", type=int, help="the number of codes to cover at least")
+    parser.add_argument("c1", type=str, help="lower bound for the codes in the cover")
+    parser.add_argument("c2", type=str, help="upper bound for the codes in the cover")
     return parser.parse_args()
 
 
@@ -79,11 +80,11 @@ def compute_cover(tree: CoverMultiWaySearchTree,
     pq = HeapPriorityQueue(contents=[(get_number_of_useful_items([node], c1, c2), node) for node in nodes])
 
     # Step 5: Greedy approach - Use the node with the maximum number of useful items TODO change list into set
-    cover = list()
+    cover = set()
     while k > 0:
         useful_items, node = pq.remove_max()
         k -= useful_items
-        cover.append(node)
+        cover.add(node)
     return cover
 
 
@@ -98,8 +99,9 @@ def main(k, c1, c2):
         return
     for node in cover:
         print(node, get_number_of_useful_items([node], c1, c2))  # TODO do not print second parameter
+    print(f"({k}, {c1}, {c2})-cover is {len(cover)} nodes long")
 
 
 if __name__ == '__main__':
     args = init_parameter()
-    main(args.k, args.c1, args.c2)
+    main(args.k, args.c1.upper(), args.c2.upper())
