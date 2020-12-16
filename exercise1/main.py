@@ -1,9 +1,32 @@
+import sys
+sys.path.append('../final-project')
+
 from data_structures.cover_multi_way_search_tree import CoverMultiWaySearchTree
 from data_structures.currency import Currency
 from data_structures.heap_priority_queue import HeapPriorityQueue
 from iso4217 import Currency as cur
 from random import shuffle
 from typing import Optional, Set
+import argparse
+
+
+def init_parameter():
+    """
+    Create argument parser.
+    usage: main.py [-h] [-k K] [-c1 C1] [-c2 C2]
+    (k, c1, c2)-cover for MultiWaySearchTree storing currency codes
+    optional arguments:
+      -h, --help  show this help message and exit
+      -k K        the number of codes to cover at least
+      -c1 C1      lower bound for the codes in the cover
+      -c2 C2      upper bound for the codes in the cover
+    :return: input arguments
+    """
+    parser = argparse.ArgumentParser(description='(k, c1, c2)-cover for MultiWaySearchTree storing currency codes')
+    parser.add_argument("-k", type=int, help="the number of codes to cover at least")
+    parser.add_argument("-c1", type=str, help="lower bound for the codes in the cover")
+    parser.add_argument("-c2", type=str, help="upper bound for the codes in the cover")
+    return parser.parse_args()
 
 
 def build_tree() -> CoverMultiWaySearchTree:
@@ -64,21 +87,19 @@ def compute_cover(tree: CoverMultiWaySearchTree,
     return cover
 
 
-def main():
+def main(k, c1, c2):
     # Build the tree
     tree = build_tree()
 
     # Compute cover
-    k = 4
-    c1 = "EUR"
-    c2 = "ILS"
     cover = compute_cover(tree, k, c1, c2)
     if cover is None:
-        print(cover)
+        print(f"({k}, {c1}, {c2})-cover does not exist")
         return
     for node in cover:
-        print(node, get_number_of_useful_items([node], c1, c2))
+        print(node, get_number_of_useful_items([node], c1, c2))  # TODO do not print second parameter
 
 
 if __name__ == '__main__':
-    main()
+    args = init_parameter()
+    main(args.k, args.c1, args.c2)
