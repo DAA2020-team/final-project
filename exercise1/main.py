@@ -1,18 +1,83 @@
-from data_structures.multi_way_search_tree import MultiWaySearchTree
+from data_structures.cover_multi_way_search_tree import CoverMultiWaySearchTree
 from data_structures.currency import Currency
+from data_structures.heap_priority_queue import HeapPriorityQueue
 from iso4217 import Currency as cur
 from random import shuffle
+from typing import Optional, Set
 
 
-def main():
-    tree = MultiWaySearchTree()
+def build_tree() -> CoverMultiWaySearchTree:
+    """
+    Builds a CoverMultiWaySearchTree with all the currency codes in the standard
+    :return: a CoverMultiWaySearchTree
+    """
+    tree = CoverMultiWaySearchTree()
     codes = [currency.code for currency in cur]
     shuffle(codes)
     currencies = [Currency(code) for code in codes]
     for currency in currencies:
         tree[currency._code] = currency
-    print(tree)
-    print(len(tree))
+    return tree
+
+
+def get_number_of_useful_items(nodes, a: str, b: str) -> int:
+    """
+    Find the number of items in nodes in range [a, b]
+    :param nodes: the nodes to search in
+    :param a: lower bound
+    :param b: upper bound
+    :return: the number of items in range [a, b]
+    """
+    return sum(int(a <= item.key <= b) for node in nodes for item in node.elements)
+
+
+def compute_cover(tree: CoverMultiWaySearchTree,
+                  k: int, c1: str, c2: str) -> Optional[Set[CoverMultiWaySearchTree.Position.Node]]:
+    """
+    Tries to compute the (k, c1, c2)-cover of tree with the minimum number of nodes.
+    It follows a greedy-like appraoch.
+    :param tree: the tree to cover
+    :param k: the number of codes to cover at least
+    :param c1: lower bound for the codes in the cover
+    :param c2: upper bound for the codes in the cover
+    :return: the (k, c1, c2)-cover of tree found if exists, None otherwise
+    """
+    # Step 1: Find nodes useful for the (k, c1, c2)-cover
+    nodes = tree.find_nodes_in_range(c1, c2)
+
+    # Step 2: Count number of items in range [c1, c2]
+    n = get_number_of_useful_items(nodes, c1, c2)
+
+    # Step 3: Compare with k
+    if not n >= k:
+        return None
+
+    # Step 4: Sort nodes by number of useful items
+    pq = HeapPriorityQueue(contents=[(get_number_of_useful_items([node], c1, c2), node) for node in nodes])
+
+    # Step 5: Greedy approach - Use the node with the maximum number of useful items TODO change list into set
+    cover = list()
+    while k > 0:
+        useful_items, node = pq.remove_max()
+        k -= useful_items
+        cover.append(node)
+    return cover
+
+
+def main():
+    # Build the tree
+    tree = build_tree()
+
+    # Compute cover
+    k = 4
+    c1 = "EUR"
+    c2 = "ILS"
+    cover = compute_cover(tree, k, c1, c2)
+    if cover is None:
+        print(cover)
+        return
+    for node in cover:
+        print(node, get_number_of_useful_items([node], c1, c2))
 
 
 if __name__ == '__main__':
