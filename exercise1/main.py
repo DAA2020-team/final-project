@@ -24,9 +24,9 @@ def init_parameter():
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='(k, c1, c2)-cover for MultiWaySearchTree storing currency codes')
-    parser.add_argument("k", type=int, help="the number of codes to cover at least")
-    parser.add_argument("c1", type=str, help="lower bound for the codes in the cover")
-    parser.add_argument("c2", type=str, help="upper bound for the codes in the cover")
+    parser.add_argument("-k", type=int, default=1, help="the number of codes to cover at least")
+    parser.add_argument("-c1", type=str, default='AAA', help="lower bound for the codes in the cover")
+    parser.add_argument("-c2", type=str, default='ZZZ', help="upper bound for the codes in the cover")
     return parser.parse_args()
 
 
@@ -99,7 +99,7 @@ def main(k, c1, c2):
         return
     for node in cover:
         print(node, get_number_of_useful_items([node], c1, c2))  # TODO do not print second parameter
-    print(f"({k}, {c1}, {c2})-cover is {len(cover)} nodes long")
+    print(f"({k}, {c1}, {c2})-cover is {len(cover)} node{'s' if len(cover) > 1 else ''} long")
 
 
 if __name__ == '__main__':
