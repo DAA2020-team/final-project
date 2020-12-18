@@ -13,14 +13,13 @@ import argparse
 def init_parameter():
     """
     Create argument parser.
-    usage: main.py [-h] k c1 c2
+    usage: main.py [-h] [-k K] [-c1 C1] [-c2 C2]
     (k, c1, c2)-cover for MultiWaySearchTree storing currency codes
-    positional arguments:
-      k           the number of codes to cover at least
-      c1          lower bound for the codes in the cover
-      c2          upper bound for the codes in the cover
     optional arguments:
       -h, --help  show this help message and exit
+      -k K        the number of codes to cover at least
+      -c1 C1      lower bound for the codes in the cover
+      -c2 C2      upper bound for the codes in the cover
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='(k, c1, c2)-cover for MultiWaySearchTree storing currency codes')
@@ -30,16 +29,18 @@ def init_parameter():
     return parser.parse_args()
 
 
-def build_tree() -> CoverMultiWaySearchTree:
+def build_tree(n=None) -> CoverMultiWaySearchTree:
     """
-    Builds a CoverMultiWaySearchTree with all the currency codes in the standard
+    Builds a CoverMultiWaySearchTree of n nodes with all the currency codes in the standard
     :return: a CoverMultiWaySearchTree
     """
     tree = CoverMultiWaySearchTree()
     codes = [currency.code for currency in cur]
     shuffle(codes)
     currencies = [Currency(code) for code in codes]
-    for currency in currencies:
+    if n is None:
+        n = len(currencies)
+    for currency in currencies[:n]:
         tree[currency._code] = currency
     return tree
 
