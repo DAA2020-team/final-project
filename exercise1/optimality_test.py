@@ -8,7 +8,7 @@ from time import perf_counter
 def show_results():
     print(f'{i + 1 : _} / {N : _}, approximation: {mean(approximation)}, '
           f'mean_solution: {mean(optimal_cover_sizes) : .2f}, '
-          f'time_comparison: {mean(performance_time_ratioes) : .2f}, '
+          f'time_comparison: {mean(performance_time_ratioes) : .8f}, '
           f'none_counter: {none_counter}')
 
 
@@ -17,10 +17,10 @@ def compute_optimal_cover(tree_, k_, c1_, c2_):
     nodes = tree_.find_nodes_in_range(c1_, c2_)
 
     # Step 2: Count number of items in range [c1, c2]
-    n = get_number_of_useful_items(nodes, c1, c2)
+    n_ = get_number_of_useful_items(nodes, c1, c2)
 
     # Step 3: Compare with k
-    if not n >= k:
+    if not n_ >= k_:
         return None
 
     optimal_cover_size_ = len(nodes)
@@ -69,12 +69,12 @@ for i in range(N):
         assert greedy_cover is optimal_solution
         none_counter += 1
     else:
-        approximation.append(greedy_cover_size / optimal_solution)
+        approximation.append(optimal_solution / greedy_cover_size)
         performance_time_ratioes.append(greedy_time / optimal_time)
         if optimal_solution < greedy_cover_size:
             print("HEY")
 
-    if (i + 1) % 10 == 0:
+    if (i + 1) % 10 == 0 and len(approximation) > 0:
         show_results()
 
 print(mean(approximation))
