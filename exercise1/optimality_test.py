@@ -41,7 +41,8 @@ none_counter = 0
 optimal_cover_sizes = []
 performance_time_ratioes = []
 for i in range(N):
-    tree = build_tree()
+    n = randint(80, 166)
+    tree = build_tree(n)
 
     k = randint(1, 50)
     keys = list(tree.keys())
