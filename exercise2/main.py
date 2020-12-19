@@ -1,3 +1,4 @@
+from typing import Tuple
 from data_structures.currency import Currency
 import decimal
 
@@ -22,12 +23,13 @@ def add_den_usage(den, sol, max_solutions):
     return new_sol
 
 
-def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000):  #fixme: valore di ritorno
+def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000) -> Tuple[int, list]:
     """
     This function returns the number of different ways that value given as parameter can be achieved
     by using all the possible comibinations of the denominations of the given currency.
     :param cur: currency to use
     :param amount: the total amount to be achieved
+    :param max_solutions: the maximum number of solutions that must be returned. After 1_000, memory usage increases
     :return: the number of all the possible cominations of denominations that match the amount
     """
     amount = round(amount, 2)
@@ -35,15 +37,17 @@ def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000
 
     den_decimal_places = 0
     temp_den = []
+    unused_den = []
     for den in cur.iter_denominations():
         if den <= amount:
-            # fixme: se usiamo solo le den più piccole di amount, nella soluzione avremo solo queste den
-            den_decimal_places = max(den_decimal_places, get_decimal_places(round(den, 2)))  # fixme: levare max
+            den_decimal_places = max(den_decimal_places, get_decimal_places(round(den, 2)))  # max is needed
             temp_den.append(round(den, 2))
+        else:
+            unused_den.append(den)
 
     if amount_decimal_places > den_decimal_places:
         # if the smallest denomination has less decimal places than the amount, then a solution does not exist
-        return 0  # fixme: return (0, None)
+        return 0, []
 
     # the amount and the denominations are multiplied by the minimum possible value
     # e.g. if amount = 2.20 and den = [0.10, 0.20, 0.50] then everything is multiplied by 10^1
@@ -65,7 +69,7 @@ def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000
                     d_sol[den_dict[scaled_den[i]]] = j // scaled_den[i]
                     sol[i][j] = (1, [d_sol])
                 else:
-                    sol[i][j] = (0, [base_sol])  # fixme: lista vuota
+                    sol[i][j] = (0, [])
                 continue
             if j >= scaled_den[i]:
                 n_sol = sol[i - 1][j][0] + sol[i][j - scaled_den[i]][0]
@@ -77,6 +81,9 @@ def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000
                 sol[i][j] = (sol[i - 1][j][0], sol[i - 1][j][1][:])
             sol[i-1][j] = (sol[i-1][j][0], [])  # Memory usage optimization :)
 
+    unused_sol = {e: 0 for e in unused_den}
+    for s in sol[-1][-1][1]:
+        s.update(unused_sol)
     return sol[-1][-1]
 
 
@@ -97,8 +104,8 @@ def get_currency(c="EUR", d=None):
 
 def main():
     c = get_currency()
-    r = 10.69
-    n_sol, list_sol = denominations_combinations(c, r, max_solutions=9_000)
+    r = 1.42
+    n_sol, list_sol = denominations_combinations(c, r, max_solutions=1000)
     print(f"amount: {r : .2f}, {n_sol} solutions, printing only {len(list_sol)}:")
     for sol in list_sol:
         print(sol)
