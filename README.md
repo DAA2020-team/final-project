@@ -27,7 +27,11 @@ It can be installed using pip, running the following command:
 ### Exercise 1
 
 1. Change directory to the root folder.
-2. Run `python exercise1/main.py`
+2. Run `python exercise1/main.py` to run with the default arguments. Available arguments are:
+    * `-h`, `--help` to show arguments list and help message
+    * `-c1 currency_code` lower bound for the codes in the cover, default `AAA`
+    * `-c2 currency_code` upper bound for the codes in the cover, default `ZZZ`
+    * `-k K` the number of codes to cover at least, default `1`
 
 ### Exercise 2
 
