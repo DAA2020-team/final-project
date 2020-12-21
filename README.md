@@ -33,6 +33,9 @@ It can be installed using pip, running the following command:
 
 1. Change directory to the root folder.
 2. Run `python exercise2/main.py`
+    * This will test the function using the EUR denominations with a small amount (less than 5 is advisable).
+    If needed, modify the amount and the currency in the file.
+    * The algorithm implementation is inside this file.
 
 ### Exercise 3
 
