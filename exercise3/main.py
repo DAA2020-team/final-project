@@ -16,18 +16,22 @@ import argparse
 
 def init_parameter():
     """
-    usage: main.py [-h] [-n N] [-v V]
+    usage: main.py [-h] [-n N] [-s S] [-v [V]]
     Currencies arbitrage opportunities
     optional arguments:
-      -h, --help           show this help message and exit
-      -n N                 the number of currencies to insert in the graph(randomly chosen in ISO-4217) (default: 5)
-      -v V, --visualize V  if set to true, it draws the graph (default: false)
+      -h, --help                show this help message and exit
+      -n N                      the number of currencies to insert in the graph(randomly chosen in ISO4217)
+                                (default: 5)
+      -s S, --source S          the code of the currency to search an arbitrage opportunity for (default: random)
+      -v [V], --visualize [V]   if set to true, it draws the graph (default: false)
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='Currencies arbitrage opportunities')
     parser.add_argument("-n", type=int, default=5, help="the number of currencies to insert in the graph"
                                                         "(randomly chosen in ISO-4217) (default: 5)")
-    parser.add_argument("-v", "--visualize", type=str2bool, default=False, metavar='V',
+    parser.add_argument('-s', '--source', type=str, default=None, metavar='S', dest='s',
+                        help="the code of the currency to search an arbitrage opportunity for (default: random)")
+    parser.add_argument("-v", "--visualize", type=str2bool, default=False, metavar='V', const=True, nargs='?',
                         help="if set to true, it draws the graph (default: false)")
     return parser.parse_args()
 
@@ -66,9 +70,9 @@ def find_negative_cycle(graph: Graph, source: str) -> Tuple[bool, Optional[List[
 
 
 def find_arbitrage_opportunity(c: Set[Currency], s: Currency) -> Tuple[Graph, bool, Optional[List[Graph.Edge]]]:
-    if s._code not in [currency._code for currency in c]:
-        return False, None, None
     graph = create_graph(c)
+    if s._code not in [currency._code for currency in c]:
+        return graph, False, None
     found, cycle = find_negative_cycle(graph, s._code)
     return graph, found, cycle
 
@@ -129,9 +133,12 @@ def print_path(path: List[Graph.Edge]) -> str:
     print(f"The cycle {cycle} is an arbitrage opportunity for {path[0].endpoints()[0]} of cost {cycle_weight : .2f}")
 
 
-def main(n: int, visualize: bool):
+def main(n: int, s=None, visualize=False):
     currencies = create_currencies(n)
-    s = choice(currencies)
+    if s is None:
+        s = choice(currencies)
+    else:
+        s = Currency(s.upper())
     graph, found, cycle = find_arbitrage_opportunity(currencies, s)
     if found:
         print_path(cycle)
@@ -143,4 +150,4 @@ def main(n: int, visualize: bool):
 
 if __name__ == '__main__':
     args = init_parameter()
-    main(args.n, args.visualize)
+    main(args.n, args.s, args.visualize)
