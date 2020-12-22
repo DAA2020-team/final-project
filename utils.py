@@ -62,7 +62,7 @@ def validate_iso_code(code: str) -> bool:
     return code in [currency.code for currency in cur]
 
 
-def get_decimal_places(f):
+def get_decimal_places(f: str) -> int:
     """
     Method used to get the number of the meaningful decimal places of the parameter.
     :param f: the float value
