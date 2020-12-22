@@ -4,12 +4,32 @@ sys.path.append('../final-project')
 from data_structures.graph import Graph
 from data_structures.currency import Currency
 from exercise3.shortest_paths import compute_shortest_path
+from utils import str2bool
 
 import networkx as nx
 import matplotlib.pyplot as plt
 from iso4217 import Currency as iso_currency
 from random import shuffle, choice, uniform
 from typing import List, Set, Tuple, Optional
+import argparse
+
+
+def init_parameter():
+    """
+    usage: main.py [-h] [-n N] [-v V]
+    Currencies arbitrage opportunities
+    optional arguments:
+      -h, --help           show this help message and exit
+      -n N                 the number of currencies to insert in the graph(randomly chosen in ISO-4217) (default: 5)
+      -v V, --visualize V  if set to true, it draws the graph (default: false)
+    :return: input arguments
+    """
+    parser = argparse.ArgumentParser(description='Currencies arbitrage opportunities')
+    parser.add_argument("-n", type=int, default=5, help="the number of currencies to insert in the graph"
+                                                        "(randomly chosen in ISO-4217) (default: 5)")
+    parser.add_argument("-v", "--visualize", type=str2bool, default=True, metavar='V',
+                        help="if set to true, it draws the graph (default: false)")
+    return parser.parse_args()
 
 
 def show_graph(g: Graph):
@@ -109,17 +129,18 @@ def print_path(path: List[Graph.Edge]) -> str:
     print(f"The cycle {cycle} is an arbitrage opportunity for {path[0].endpoints()[0]} of cost {cycle_weight : .2f}")
 
 
-def main():
-    currencies = create_currencies(5)
+def main(n: int, visualize: bool):
+    currencies = create_currencies(n)
     s = choice(currencies)
     graph, found, cycle = find_arbitrage_opportunity(currencies, s)
-    show_graph(graph)
     if found:
         print_path(cycle)
     else:
         print(f"The graph does not contain arbitrage opportunities for {s._code}")
-    print("OK")
+    if visualize:
+        show_graph(graph)
 
 
 if __name__ == '__main__':
-    main()
+    args = init_parameter()
+    main(args.n, args.visualize)

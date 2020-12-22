@@ -59,3 +59,19 @@ def validate_iso_code(code: str) -> bool:
     :return: True if code is a valid ISO-4217 standard code, False otherwise
     """
     return code in [currency.code for currency in cur]
+
+
+def str2bool(v: str) -> bool:
+    """
+    Converts the v string into a boolean
+    :param v: the string to convert
+    :return: the boolean value corresponding to v
+    """
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
