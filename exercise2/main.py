@@ -27,7 +27,7 @@ def init_parameter():
     return parser.parse_args()
 
 
-def add_den_usage(denomination, solution, max_solutions):
+def add_den_usage(denomination, solution, max_solutions=1000):
     new_solution = []
     for i, d in enumerate(solution):
         usages_per_denomination = dict(d)
@@ -98,25 +98,25 @@ def denominations_combinations(currency: Currency, amount: float,
                 sol[i][j] = (sol[i - 1][j][0], sol[i - 1][j][1][:])
             sol[i - 1][j] = (sol[i - 1][j][0], [])  # Memory usage optimization
 
-    unused_sol = {e: 0 for e in unused_denominations}
+    unused_sol = {denomination: 0 for denomination in unused_denominations}
     for s in sol[-1][-1][1]:
         s.update(unused_sol)
     return sol[-1][-1]
 
 
-def get_currency(c="EUR", d=None):
+def get_currency(c="EUR", d=None) -> Currency:
     """
-    Method to create easily a currency with standard denominations, if none is provided.
-    :param c: the currency name
-    :param d: the list of denominations to be used
-    :return: the new currency
+    Method to easily create a currency with standard denominations, if none is provided.
+    :param c: the currency code
+    :param d: the list of denominations to use
+    :return: the currency object
     """
     if d is None:
         d = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500]
-    cur = Currency(c)
+    currency = Currency(c)
     for i in d:
-        cur.add_denomination(i)
-    return cur
+        currency.add_denomination(i)
+    return currency
 
 
 def main(r: float, d: List[float]):
