@@ -50,8 +50,8 @@ class PriorityQueueBase:
         def __le__(self, other):
             return self.__lt__(other) or self.__eq__(other)
 
-
     # ------------------------------ public behaviors ------------------------------
+
     def is_empty(self):  # concrete method assuming abstract len
         """Return True if the priority queue is empty."""
         return len(self) == 0
