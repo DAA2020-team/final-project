@@ -80,7 +80,7 @@ def compute_cover(tree: CoverMultiWaySearchTree,
     # Step 4: Sort nodes by number of useful items
     pq = HeapPriorityQueue(contents=[(get_number_of_useful_items([node], c1, c2), node) for node in nodes])
 
-    # Step 5: Greedy approach - Use the node with the maximum number of useful items TODO change list into set
+    # Step 5: Greedy approach - Use the node with the maximum number of useful items
     cover = set()
     while k > 0:
         useful_items, node = pq.remove_max()
@@ -99,7 +99,7 @@ def main(k, c1, c2):
         print(f"({k}, {c1}, {c2})-cover does not exist")
         return
     for node in cover:
-        print(node, get_number_of_useful_items([node], c1, c2))  # TODO do not print second parameter
+        print(node, get_number_of_useful_items([node], c1, c2))
     print(f"({k}, {c1}, {c2})-cover is {len(cover)} node{'s' if len(cover) > 1 else ''} long")
 
 

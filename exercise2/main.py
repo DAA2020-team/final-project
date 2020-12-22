@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../final-project')
+
 from typing import Tuple
 from data_structures.currency import Currency
 import decimal
