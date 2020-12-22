@@ -27,59 +27,9 @@ def init_parameter():
     parser = argparse.ArgumentParser(description='Currencies arbitrage opportunities')
     parser.add_argument("-n", type=int, default=5, help="the number of currencies to insert in the graph"
                                                         "(randomly chosen in ISO-4217) (default: 5)")
-    parser.add_argument("-v", "--visualize", type=str2bool, default=True, metavar='V',
+    parser.add_argument("-v", "--visualize", type=str2bool, default=False, metavar='V',
                         help="if set to true, it draws the graph (default: false)")
     return parser.parse_args()
-
-
-def show_graph(g: Graph):
-    vertices = g.vertices()
-    edges = g.edges()
-
-    dg = nx.DiGraph()
-    dg.add_nodes_from(vertices, label=vertices)
-    dg.add_weighted_edges_from([(edge._origin, edge._destination, edge.element()) for edge in edges])
-
-    plt.plot()
-    layout = nx.circular_layout(dg)
-    nx.draw(dg, layout, with_labels=True)
-    labels = nx.get_edge_attributes(dg, "weight")
-    for key, weight in labels.items():
-        labels[key] = round(labels[key], 2)
-    nx.draw_networkx_edge_labels(dg, pos=layout, edge_labels=labels)
-    plt.show()
-
-
-def create_currencies(n: int) -> List[Currency]:
-    currencies = [currency for currency in iso_currency]
-    codes = [currency.code for currency in currencies]
-    shuffle(codes)
-    currencies = [Currency(code) for code in codes][:n]
-    for currency in currencies:
-        try:
-            for c in currencies:
-                if c != currency:
-                    currency.add_change(c._code, uniform(-1, 1))
-        except ValueError:
-            continue
-    return currencies
-
-
-def create_graph(currencies: Set[Currency]):
-    g = Graph(directed=True)
-    for currency in currencies:
-        if currency._code not in g.vertices():
-            g.insert_vertex(currency._code)
-        for c in currencies:
-            code = c._code
-            try:
-                change = currency.get_change(code)
-                if code not in g.vertices():
-                    g.insert_vertex(code)
-                g.insert_edge(currency._code, code, round(change, 2))
-            except KeyError:
-                continue
-    return g
 
 
 def find_negative_cycle(graph: Graph, source: str) -> Tuple[bool, Optional[List[Graph.Edge]]]:
@@ -121,6 +71,56 @@ def find_arbitrage_opportunity(c: Set[Currency], s: Currency) -> Tuple[Graph, bo
     graph = create_graph(c)
     found, cycle = find_negative_cycle(graph, s._code)
     return graph, found, cycle
+
+
+def create_currencies(n: int) -> List[Currency]:
+    currencies = [currency for currency in iso_currency]
+    codes = [currency.code for currency in currencies]
+    shuffle(codes)
+    currencies = [Currency(code) for code in codes][:n]
+    for currency in currencies:
+        try:
+            for c in currencies:
+                if c != currency:
+                    currency.add_change(c._code, uniform(-1, 1))
+        except ValueError:
+            continue
+    return currencies
+
+
+def create_graph(currencies: Set[Currency]):
+    g = Graph(directed=True)
+    for currency in currencies:
+        if currency._code not in g.vertices():
+            g.insert_vertex(currency._code)
+        for c in currencies:
+            code = c._code
+            try:
+                change = currency.get_change(code)
+                if code not in g.vertices():
+                    g.insert_vertex(code)
+                g.insert_edge(currency._code, code, round(change, 2))
+            except KeyError:
+                continue
+    return g
+
+
+def show_graph(g: Graph):
+    vertices = g.vertices()
+    edges = g.edges()
+
+    dg = nx.DiGraph()
+    dg.add_nodes_from(vertices, label=vertices)
+    dg.add_weighted_edges_from([(edge._origin, edge._destination, edge.element()) for edge in edges])
+
+    plt.plot()
+    layout = nx.circular_layout(dg)
+    nx.draw(dg, layout, with_labels=True)
+    labels = nx.get_edge_attributes(dg, "weight")
+    for key, weight in labels.items():
+        labels[key] = round(labels[key], 2)
+    nx.draw_networkx_edge_labels(dg, pos=layout, edge_labels=labels)
+    plt.show()
 
 
 def print_path(path: List[Graph.Edge]) -> str:
