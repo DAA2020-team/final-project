@@ -1,6 +1,7 @@
 import pickle
 import os
 from typing import Tuple, List
+import decimal
 
 from iso4217 import Currency as cur
 
@@ -59,6 +60,15 @@ def validate_iso_code(code: str) -> bool:
     :return: True if code is a valid ISO-4217 standard code, False otherwise
     """
     return code in [currency.code for currency in cur]
+
+
+def get_decimal_places(f):
+    """
+    Method used to get the number of the meaningful decimal places of the parameter.
+    :param f: the float value
+    :return: the number of the meaningful decimal places of the parameter
+    """
+    return -decimal.Decimal(str(f)).as_tuple().exponent
 
 
 def str2bool(v: str) -> bool:
