@@ -27,7 +27,7 @@ def init_parameter():
     return parser.parse_args()
 
 
-def add_den_usage(denomination, solution, max_solutions=1000):
+def add_den_usage(denomination, solution, max_solutions=1_000):
     new_solution = []
     for i, d in enumerate(solution):
         usages_per_denomination = dict(d)
@@ -121,7 +121,7 @@ def get_currency(c="EUR", d=None) -> Currency:
 
 def main(r: float, d: List[float]):
     c = get_currency(d=d)
-    n_sol, list_sol = denominations_combinations(c, r, max_solutions=10)
+    n_sol, list_sol = denominations_combinations(c, r, max_solutions=1_000)
     print(f"amount: {r : .2f}, {n_sol : ,} solutions, printing only {len(list_sol)}:\n" +
           ",\n".join(" + ".join(f"{usages}*{denomination}" for denomination, usages in sol.items() if usages > 0)
                      for sol in list_sol))
