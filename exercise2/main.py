@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../final-project')
 
-from typing import Tuple
+from typing import Tuple, List, Dict
 import argparse
 
 from data_structures.currency import Currency
@@ -11,15 +11,19 @@ from utils import get_decimal_places
 def init_parameter():
     """
     Create argument parser.
-    usage: main.py [-h] [-r R]
+    usage: main.py [-h] [-r R] [-d D [D ...]]
     Finds all combinations to change an amount.
     optional arguments:
-      -h, --help  show this help message and exit
-      -r R        the amount to change (default: 1.0)
+      -h, --help                                show this help message and exit
+      -r R, --amount R                          the amount to change (default: 1.0)
+      -d D [D ...], --denominations D [D ...]   the denominations used to change (default: from 0.01 to 500)
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='Finds all combinations to change an amount.')
-    parser.add_argument("-r", type=float, default=1.0, help="the amount to change (default: 1.0)")
+    parser.add_argument("-r", "--amount", metavar="R", dest="r", type=float, default=1.0,
+                        help="the amount to change (default: 1.0)")
+    parser.add_argument("-d", "--denominations", metavar="D", dest="d", nargs="+", type=float, default=None,
+                        help="the denominations used to change (default: from 0.01 to 500)")
     return parser.parse_args()
 
 
@@ -34,11 +38,12 @@ def add_den_usage(denomination, solution, max_solutions):
     return new_solution
 
 
-def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000) -> Tuple[int, list]:
+def denominations_combinations(currency: Currency, amount: float,
+                               max_solutions=1_000) -> Tuple[int, List[Dict[float, int]]]:
     """
     This function returns the number of different ways that value given as parameter can be achieved
     by using all the possible comibinations of the denominations of the given currency.
-    :param cur: currency to use
+    :param currency: currency to use
     :param amount: the total amount to be achieved
     :param max_solutions: the maximum number of solutions that must be returned. After 1_000, memory usage increases
     :return: the number of all the possible cominations of denominations that match the amount
@@ -49,7 +54,7 @@ def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000
     den_decimal_places = 0
     denominations = []
     unused_denominations = []
-    for den in cur.iter_denominations():
+    for den in currency.iter_denominations():
         if den <= amount:
             den_decimal_places = max(den_decimal_places, get_decimal_places(round(den, 2)))  # max is needed
             denominations.append(round(den, 2))
@@ -91,7 +96,7 @@ def denominations_combinations(cur: Currency, amount: float, max_solutions=1_000
                 sol[i][j] = (n_sol, d_sol[-max_solutions:])
             else:
                 sol[i][j] = (sol[i - 1][j][0], sol[i - 1][j][1][:])
-            sol[i-1][j] = (sol[i-1][j][0], [])  # Memory usage optimization
+            sol[i - 1][j] = (sol[i - 1][j][0], [])  # Memory usage optimization
 
     unused_sol = {e: 0 for e in unused_denominations}
     for s in sol[-1][-1][1]:
@@ -114,14 +119,14 @@ def get_currency(c="EUR", d=None):
     return cur
 
 
-def main(r: float):
-    c = get_currency()
+def main(r: float, d: List[float]):
+    c = get_currency(d=d)
     n_sol, list_sol = denominations_combinations(c, r, max_solutions=10)
-    print(f"amount: {r : .2f}, {n_sol} solutions, printing only {len(list_sol)}:")
-    for sol in list_sol:
-        print(sol)
+    print(f"amount: {r : .2f}, {n_sol : ,} solutions, printing only {len(list_sol)}:\n" +
+          ",\n".join(" + ".join(f"{usages}*{denomination}" for denomination, usages in sol.items() if usages > 0)
+                     for sol in list_sol))
 
 
 if __name__ == '__main__':
     args = init_parameter()
-    main(args.r)
+    main(args.r, args.d)
