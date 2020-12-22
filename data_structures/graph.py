@@ -18,6 +18,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from typing import Iterator
+
 
 class Graph:
     """Representation of a simple graph using an adjacency map."""
@@ -58,13 +60,13 @@ class Graph:
 
         def opposite(self, v):
             """Return the vertex that is opposite v on this edge."""
-            if not isinstance(v, Graph.Vertex):
-                raise TypeError('v must be a Vertex')
-            if v is self._origin:
+            if not isinstance(v, str):
+                raise TypeError('v must be a string')
+            if v == self._origin:
                 return self._destination
-            elif v is self._destination:
+            elif v == self._destination:
                 return self._origin
-            raise ValueError('v not incident to edge')
+            raise ValueError(f'{v} not incident to {(self._origin, self._destination)}')
 
         def element(self):
             """Return element associated with this edge."""
@@ -136,7 +138,7 @@ class Graph:
         adj = self._outgoing if outgoing else self._incoming
         return len(adj[v])
 
-    def incident_edges(self, v, outgoing=True):
+    def incident_edges(self, v, outgoing=True) -> Iterator[Edge]:
         """Return all (outgoing) edges incident to vertex v in the graph.
 
     If graph is directed, optional parameter used to request incoming edges.
