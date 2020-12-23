@@ -71,7 +71,7 @@ The implementation of the `denominations_combinations()` function is in the file
     * `-v` will draw the graph if set to `True`
         * If not specified, this flag is `False` and no graph will be shown
     * For example, `python exercise3/main.py -n 8 -s EUR -v` will search an arbitrage opportunity for EUR in a graph of 8 currencies, visualizing the graph 
-        * A value smaller than 10 is advisable for `N` if you want to see the graph
+        * A value smaller or equal to 5 is advisable for `N` if you want to see the graph
     * Run `python exercise3/main.py --help` to show usage suggestions
 
 The implementation of the `find_arbitrage_opportunity()` function is in the file [exercise3/main.py](https://github.com/DAA2020-team/final-project/blob/master/exercise3/main.py).
