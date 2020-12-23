@@ -77,7 +77,7 @@ def find_arbitrage_opportunity(c: Set[Currency], s: Currency) -> Tuple[Graph, bo
     return graph, found, cycle
 
 
-def create_currencies(n: int) -> List[Currency]:
+def create_currencies(n: int) -> Set[Currency]:
     currencies = [currency for currency in iso_currency]
     codes = [currency.code for currency in currencies]
     shuffle(codes)
@@ -89,7 +89,7 @@ def create_currencies(n: int) -> List[Currency]:
                     currency.add_change(c._code, uniform(-1, 1))
         except ValueError:
             continue
-    return currencies
+    return set(currencies)
 
 
 def create_graph(currencies: Set[Currency]):
@@ -119,15 +119,15 @@ def show_graph(g: Graph):
 
     plt.plot()
     layout = nx.circular_layout(dg)
-    nx.draw(dg, layout, with_labels=True)
+    nx.draw(dg, layout, with_labels=True, connectionstyle='arc3, rad = 0.15')
     labels = nx.get_edge_attributes(dg, "weight")
     for key, weight in labels.items():
         labels[key] = round(labels[key], 2)
-    nx.draw_networkx_edge_labels(dg, pos=layout, edge_labels=labels)
+    nx.draw_networkx_edge_labels(dg, pos=layout, font_color='b', edge_labels=labels, label_pos=0.25, font_size=8)
     plt.show()
 
 
-def print_path(path: List[Graph.Edge]) -> str:
+def print_path(path: List[Graph.Edge]):
     cycle = "[" + " -> ".join([edge.endpoints()[0] for edge in path] + [path[-1].endpoints()[1]]) + "]"
     cycle_weight = round(sum(edge.element() for edge in path), 2)
     print(f"The cycle {cycle} is an arbitrage opportunity for {path[0].endpoints()[0]} of cost {cycle_weight : .2f}")
@@ -136,7 +136,7 @@ def print_path(path: List[Graph.Edge]) -> str:
 def main(n: int, s=None, visualize=False):
     currencies = create_currencies(n)
     if s is None:
-        s = choice(currencies)
+        s = choice(list(currencies))
     else:
         s = Currency(s.upper())
     graph, found, cycle = find_arbitrage_opportunity(currencies, s)
