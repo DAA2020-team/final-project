@@ -67,10 +67,20 @@ class HeapPriorityQueue(PriorityQueueBase):  # base class defines _Item
                 self._swap(j, small_child)
                 self._downheap(small_child)  # recur at position of small child
 
+    def _heapify(self):
+        start = self._parent(len(self) - 1)
+        for j in range(start, -1, -1):
+            self._downheap(j)
+
     # ------------------------------ public behaviors ------------------------------
-    def __init__(self):
+    def __init__(self, contents=None):
         """Create a new empty Priority Queue."""
-        self._data = []
+        if contents is not None:
+            self._data = [self._Item(k, v) for k, v in contents]
+        else:
+            self._data = []
+        if len(self._data) > 1:
+            self._heapify()
 
     def __len__(self):
         """Return the number of items in the priority queue."""
@@ -89,7 +99,7 @@ class HeapPriorityQueue(PriorityQueueBase):  # base class defines _Item
         if self.is_empty():
             raise Empty('Priority queue is empty.')
         item = self._data[0]
-        return (item._key, item._value)
+        return item._key, item._value
 
     def remove_min(self):
         """Remove and return (k,v) tuple with minimum key.
@@ -101,4 +111,4 @@ class HeapPriorityQueue(PriorityQueueBase):  # base class defines _Item
         self._swap(0, len(self._data) - 1)  # put minimum item at the end
         item = self._data.pop()  # and remove it from the list;
         self._downheap(0)  # then fix new root
-        return (item._key, item._value)
+        return item._key, item._value
