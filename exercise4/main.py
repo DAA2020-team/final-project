@@ -15,7 +15,7 @@ from time import perf_counter
 from exercise4.tsp import twoOPT, threeOPT, TSP_SA
 
 
-OVER_COST = 100_000
+OVER_COST = 10 ** 10
 
 
 def create_currencies(n: int) -> List[Currency]:
@@ -127,7 +127,7 @@ def call_and_time(name, ids, func, *args):
 
 def find_exchange_tour(currencies: Set[Currency]) -> Tuple[List[Currency], float]:
     ids, graph = create_graph_from_currencies(currencies)
-    show_graph(ids, graph)
+    # show_graph(ids, graph)
     call_and_time("2-OPT", ids, twoOPT, graph, list(range(len(graph))))
     call_and_time("3-OPT", ids, threeOPT, graph, list(range(len(graph))))
     call_and_time("Simulated Annealing", ids, TSP_SA, graph)
