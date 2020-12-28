@@ -65,7 +65,7 @@ The implementation of the `denominations_combinations()` function is in the file
 1. Change directory to the root folder.
 2. Run `python exercise3/main.py`
     * This will test the function creating a strongly connected dense graph of 5 currencies, searching for an arbitrage opportunity for a random currency
-3. You can test the algorithm with different `n` and `s` parameters with the command `python exercise2/main.py -n N -s S -v [V]`, where:
+3. You can test the algorithm with different `n` and `s` parameters with the command `python exercise3/main.py -n N -s S -v`, where:
     * `N` is the number of currencies to insert in the graph
     * `S` is the code of the currency to search an arbitrage opportunity for
     * `-v` will draw the graph if set to `True`
@@ -80,6 +80,17 @@ The implementation of the `find_arbitrage_opportunity()` function is in the file
 
 1. Change directory to the root folder.
 2. Run `python exercise4/main.py`
+   * This will test the function creating an undirected graph starting from the 5 curriences defined in the `create_custom_currencies()` function, searching for an exchange tour of minimal rate using a Simulated Annealing Local Search algorithm.
+3. With the command `python exercise4/main.py -i {'custom','random'} -n N -t {'sa','2opt','3opt'} -v` you can change different parameters:
+   * `-i` will change where the input set of currencies comes from:
+      * `-i custom` will load the curriences defined in the `create_custom_currencies()` function
+      * `-i random` will choose `N` different currencies from the ISO-4217 standard
+      * If not specified, `-i custom` is the default option
+   * `-n N` specifies how many currencies will be chosen if the option `-i random` is option
+      * Otherwise, this option is not effective
+      * By default, `N` is 100
+
+#### Custom set of currencies
    
 ## Other resources
 
