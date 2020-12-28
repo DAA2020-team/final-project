@@ -38,6 +38,14 @@ def init_parameter():
 
 
 def find_negative_cycle(graph: Graph, source: str) -> Tuple[bool, Optional[List[Graph.Edge]]]:
+    """
+    Finds a negative cycle starting at source in graph.
+    :param graph: the graph where source is
+    :param source: the starting node of the cycle to find
+    :return:
+        found: True if a negative cycle exists, False otherwise
+        cycle: the list of edges representing the cycle. It is None if found is False.
+    """
     # Step 1: Find all neighbors outgoing from source
     neighbors = {edge.opposite(source): edge for edge in graph.incident_edges(source, outgoing=True)}
 
@@ -71,6 +79,15 @@ def find_negative_cycle(graph: Graph, source: str) -> Tuple[bool, Optional[List[
 
 
 def find_arbitrage_opportunity(c: Set[Currency], s: Currency) -> Tuple[Graph, bool, Optional[List[Graph.Edge]]]:
+    """
+    Finds an arbitrage opportunity for s among the set of currencies c.
+    :param c: the set of currencies
+    :param s: the source currency
+    :return:
+        graph: the graph representing c
+        found: True if an arbitrage opportunity for s is found, False otherwise
+        cycle: the list of edges representing the arbitrage opportunity. It is None if found is False.
+    """
     graph = create_graph(c)
     if s._code not in [currency._code for currency in c]:
         return graph, False, None
@@ -79,6 +96,11 @@ def find_arbitrage_opportunity(c: Set[Currency], s: Currency) -> Tuple[Graph, bo
 
 
 def create_currencies(n: int) -> Set[Currency]:
+    """
+    Creates a random set of n currencies, randomly chosen from ISO-4217
+    :param n: the number of currencies
+    :return: a set of currencies from ISO-4217
+    """
     currencies = [currency for currency in iso_currency]
     codes = [currency.code for currency in currencies]
     shuffle(codes)
@@ -93,7 +115,12 @@ def create_currencies(n: int) -> Set[Currency]:
     return set(currencies)
 
 
-def create_graph(currencies: Set[Currency]):
+def create_graph(currencies: Set[Currency]) -> Graph:
+    """
+    Creates a directed graph representing currencies.
+    :param currencies: the currencies to insert in the graph
+    :return: the graph representing currencies
+    """
     g = Graph(directed=True)
     for currency in currencies:
         if currency._code not in g.vertices():
@@ -111,6 +138,10 @@ def create_graph(currencies: Set[Currency]):
 
 
 def show_graph(g: Graph):
+    """
+    Displays the graph g.
+    :param g: the graph to display
+    """
     vertices = g.vertices()
     edges = g.edges()
 
@@ -129,6 +160,10 @@ def show_graph(g: Graph):
 
 
 def print_path(path: List[Graph.Edge]):
+    """
+    Prints the nodes involved in the path.
+    :param path: the path to print.
+    """
     cycle = "[" + " -> ".join([edge.endpoints()[0] for edge in path] + [path[-1].endpoints()[1]]) + "]"
     cycle_weight = round(sum(edge.element() for edge in path), 2)
     print(f"The cycle {cycle} is an arbitrage opportunity for {path[0].endpoints()[0]} of cost {cycle_weight : .2f}")

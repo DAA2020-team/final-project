@@ -17,7 +17,6 @@ from exercise4.exchange_tour import simulated_annealing, two_opt, three_opt, tou
 
 global technique
 OVER_COST = 10 ** 10
-technique = 'SA'
 
 
 def init_parameter():
@@ -62,6 +61,11 @@ def init_parameter():
 
 
 def create_currencies(n: int) -> List[Currency]:
+    """
+    Creates a random set of n currencies, randomly chosen from ISO-4217
+    :param n: the number of currencies
+    :return: a set of currencies from ISO-4217
+    """
     currencies = [currency for currency in iso_currency]
     codes = [currency.code for currency in currencies]
     shuffle(codes)
@@ -76,6 +80,11 @@ def create_currencies(n: int) -> List[Currency]:
 
 
 def show_graph(ids: Dict[int, Currency], graph: np.ndarray):
+    """
+    Displays the graph of currencies represented in ids.
+    :param graph: the graph to display
+    :param ids: the association between indices and codes
+    """
     n = len(graph)
 
     g = nx.Graph()
@@ -98,6 +107,11 @@ def show_graph(ids: Dict[int, Currency], graph: np.ndarray):
 
 
 def create_custom_curencies() -> Set[Currency]:
+    """
+    [CHANGE HERE]
+    Creates a custom set of currencies
+    :return: a set of currencies
+    """
     mru = Currency("MRU")
     pen = Currency("PEN")
     lbp = Currency("LBP")
@@ -127,6 +141,13 @@ def create_custom_curencies() -> Set[Currency]:
 
 
 def create_graph_from_currencies(currencies: List[Currency]) -> Tuple[Dict[int, Currency], np.ndarray]:
+    """
+    Creates an undirected graph, implemeneted as an adjacency matrix representing currencies.
+    :param currencies: the currencies to insert in the graph
+    :return:
+        ids: the association between indices and codes
+        graph: the adjacency matrix of the graph representing currencies
+    """
     shuffle(currencies)
     n = len(currencies)
     ids = {i: currency for i, currency in enumerate(currencies)}
@@ -151,29 +172,46 @@ def create_graph_from_currencies(currencies: List[Currency]) -> Tuple[Dict[int, 
 
 
 def find_exchange_tour(currencies: Set[Currency]) -> Tuple[np.ndarray, float, List[Currency]]:
+    """
+    Finds an exchange tour of minimal rate among currencies.
+    :param currencies: the set of currencies to search the exchange tour in
+    :return:
+        graph: the adjacency matrix of the graph representing currencies
+        rate: the rate of the exchange tour found
+        exchange_tour: the list of currencies involved in the exchange tour
+    """
     ids, graph = create_graph_from_currencies(list(currencies))
 
-    if technique == 'SA':
+    if technique == 'sa':
         rate, exchange_tour = simulated_annealing(graph)
-    elif technique == '2-OPT':
+    elif technique == '2opt':
         rate, exchange_tour = two_opt(graph, list(range(len(graph))))
-    else:
+    elif technique == '3opt':
         rate, exchange_tour = three_opt(graph, list(range(len(graph))))
+    else:
+        raise ValueError("Technique unknown.")
 
     return graph, rate, [ids[step] for step in exchange_tour]
 
 
-def main(i='custom', n=100, t=('SA', ), verbose=False):
+def main(i='custom', n=100, t=('sa', ), verbose=False):
     global technique
+    algorithm_names = {
+        'sa': 'Simulated Annealing',
+        '2opt': '2-Optimal',
+        '3opt': '3-Optimal'
+    }
 
     if i == 'custom':
         currencies = create_custom_curencies()
-    else:
+    elif i == 'random':
         currencies = create_currencies(n)
+    else:
+        raise ValueError("Input unknown.")
 
     for algorithm in t:
         technique = algorithm
-        print(algorithm, end='', flush=True)
+        print(algorithm_names[algorithm], end='', flush=True)
         t0 = perf_counter()
         graph, rate, exchange_tour = find_exchange_tour(set(currencies))
         t1 = perf_counter()
@@ -195,4 +233,4 @@ def main(i='custom', n=100, t=('SA', ), verbose=False):
 
 if __name__ == '__main__':
     args = init_parameter()
-    main(args.i, args.n, args.t, args.v)
+    main(args.i, args.n, tuple(set(args.t)), args.v)
