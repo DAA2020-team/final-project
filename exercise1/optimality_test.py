@@ -1,14 +1,14 @@
 from exercise1.main import build_tree, compute_cover, get_number_of_useful_items
 import itertools
 from statistics import mean
-from random import randint, choice, shuffle
+from random import randint, shuffle
 from time import perf_counter
 
 
 def show_results():
     print(f'{i + 1 : _} / {N : _}, approximation: {mean(approximation)}, '
           f'mean_solution: {mean(optimal_cover_sizes) : .2f}, '
-          f'time_comparison: {mean(performance_time_ratioes) : .8f}, '
+          f'time_comparison: {mean(performance_time_ratios) : .8f}, '
           f'none_counter: {none_counter}')
 
 
@@ -39,7 +39,7 @@ N = 10_000
 approximation = []
 none_counter = 0
 optimal_cover_sizes = []
-performance_time_ratioes = []
+performance_time_ratios = []
 for i in range(N):
     n = randint(80, 166)
     tree = build_tree(n)
@@ -70,7 +70,7 @@ for i in range(N):
         none_counter += 1
     else:
         approximation.append(optimal_solution / greedy_cover_size)
-        performance_time_ratioes.append(greedy_time / optimal_time)
+        performance_time_ratios.append(greedy_time / optimal_time)
         if optimal_solution < greedy_cover_size:
             print("HEY")
 

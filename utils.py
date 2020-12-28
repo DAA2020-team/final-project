@@ -2,7 +2,6 @@ import pickle
 import os
 from typing import Tuple, List
 import decimal
-import argparse
 
 from iso4217 import Currency as cur
 
@@ -63,26 +62,10 @@ def validate_iso_code(code: str) -> bool:
     return code in [currency.code for currency in cur]
 
 
-def get_decimal_places(f: str) -> int:
+def get_decimal_places(f: float) -> int:
     """
     Method used to get the number of the meaningful decimal places of the parameter.
     :param f: the float value
     :return: the number of the meaningful decimal places of the parameter
     """
     return -decimal.Decimal(str(f)).as_tuple().exponent
-
-
-def str2bool(v: str) -> bool:
-    """
-    Converts the v string into a boolean
-    :param v: the string to convert
-    :return: the boolean value corresponding to v
-    """
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')

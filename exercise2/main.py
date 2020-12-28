@@ -42,11 +42,11 @@ def denominations_combinations(currency: Currency, amount: float,
                                max_solutions=1_000) -> Tuple[int, List[Dict[float, int]]]:
     """
     This function returns the number of different ways that value given as parameter can be achieved
-    by using all the possible comibinations of the denominations of the given currency.
+    by using all the possible combinations of the denominations of the given currency.
     :param currency: currency to use
     :param amount: the total amount to be achieved
     :param max_solutions: the maximum number of solutions that must be returned. After 1_000, memory usage increases
-    :return: the number of all the possible cominations of denominations that match the amount
+    :return: the number of all the possible combinations of denominations that match the amount
     """
     amount = round(amount, 2)
     amount_decimal_places = get_decimal_places(amount)
@@ -68,30 +68,30 @@ def denominations_combinations(currency: Currency, amount: float,
     # the amount and the denominations are multiplied by the minimum possible value
     # e.g. if amount = 2.20 and den = [0.10, 0.20, 0.50] then everything is multiplied by 10^1
     amount = int(round(amount, 2) * (10 ** den_decimal_places))
-    int_denonimations = [int(denomination * (10 ** den_decimal_places)) for denomination in denominations]
-    int2real = {k: v for k, v in zip(int_denonimations, denominations)}
+    int_denominations = [int(denomination * (10 ** den_decimal_places)) for denomination in denominations]
+    int2real = {k: v for k, v in zip(int_denominations, denominations)}
 
-    # dynamic programmic solution
+    # dynamic programming solution
     base_sol = {denomination: 0 for denomination in denominations}
-    sol = [[(0, [])] * (amount + 1) for _ in range(len(int_denonimations))]
-    for i in range(len(int_denonimations)):
+    sol = [[(0, [])] * (amount + 1) for _ in range(len(int_denominations))]
+    for i in range(len(int_denominations)):
         for j in range(amount + 1):
             if j == 0:
                 sol[i][j] = (1, [base_sol])  # base solution, take zero denominations
                 continue
             if i == 0:
-                if j % int_denonimations[i] == 0:
+                if j % int_denominations[i] == 0:
                     d_sol = dict(base_sol)
-                    d_sol[int2real[int_denonimations[i]]] = j // int_denonimations[i]
+                    d_sol[int2real[int_denominations[i]]] = j // int_denominations[i]
                     sol[i][j] = (1, [d_sol])
                 else:
                     sol[i][j] = (0, [])
                 continue
-            if j >= int_denonimations[i]:
-                n_sol = sol[i - 1][j][0] + sol[i][j - int_denonimations[i]][0]
+            if j >= int_denominations[i]:
+                n_sol = sol[i - 1][j][0] + sol[i][j - int_denominations[i]][0]
                 d_sol = []
                 d_sol += sol[i - 1][j][1][:]
-                d_sol += add_den_usage(int2real[int_denonimations[i]], sol[i][j - int_denonimations[i]][1],
+                d_sol += add_den_usage(int2real[int_denominations[i]], sol[i][j - int_denominations[i]][1],
                                        max_solutions=max_solutions)
                 sol[i][j] = (n_sol, d_sol[-max_solutions:])
             else:

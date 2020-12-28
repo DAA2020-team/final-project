@@ -60,7 +60,7 @@ def compute_cover(tree: CoverMultiWaySearchTree,
                   k: int, c1: str, c2: str) -> Optional[Set[CoverMultiWaySearchTree.Position.Node]]:
     """
     Tries to compute the (k, c1, c2)-cover of tree with the minimum number of nodes.
-    It follows a greedy-like appraoch.
+    It follows a greedy-like approach.
     :param tree: the tree to cover
     :param k: the number of codes to cover at least
     :param c1: lower bound for the codes in the cover

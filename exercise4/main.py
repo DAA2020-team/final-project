@@ -98,7 +98,6 @@ def show_graph(ids: Dict[int, Currency], graph: np.ndarray):
     plt.plot()
     layout = nx.shell_layout(g)
     nx.draw(g, layout, with_labels=True)
-    node_labels = nx.get_node_attributes(g, 'label')
     edge_labels = nx.get_edge_attributes(g, "weight")
     for key, weight in edge_labels.items():
         edge_labels[key] = round(edge_labels[key], 4)
@@ -106,7 +105,7 @@ def show_graph(ids: Dict[int, Currency], graph: np.ndarray):
     plt.show()
 
 
-def create_custom_curencies() -> Set[Currency]:
+def create_custom_currencies() -> Set[Currency]:
     """
     [CHANGE HERE]
     Creates a custom set of currencies
@@ -142,7 +141,7 @@ def create_custom_curencies() -> Set[Currency]:
 
 def create_graph_from_currencies(currencies: List[Currency]) -> Tuple[Dict[int, Currency], np.ndarray]:
     """
-    Creates an undirected graph, implemeneted as an adjacency matrix representing currencies.
+    Creates an undirected graph, implemented as an adjacency matrix representing currencies.
     :param currencies: the currencies to insert in the graph
     :return:
         ids: the association between indices and codes
@@ -161,11 +160,11 @@ def create_graph_from_currencies(currencies: List[Currency]) -> Tuple[Dict[int, 
                 c2 = ids[j]
                 try:
                     graph[i][j] = c1.get_change(c2._code)
-                except KeyError as e:  # r(c1, c2) does not exist
+                except KeyError:  # r(c1, c2) does not exist
                     graph[i][j] = OVER_COST
 
-    retval = np.allclose(graph, graph.T)
-    if not retval:
+    ret_val = np.allclose(graph, graph.T)
+    if not ret_val:
         raise ValueError("currencies change rates are not symmetric.")
 
     return ids, graph
@@ -203,7 +202,7 @@ def main(i='custom', n=100, t=('sa', ), verbose=False):
     }
 
     if i == 'custom':
-        currencies = create_custom_curencies()
+        currencies = create_custom_currencies()
     elif i == 'random':
         currencies = create_currencies(n)
     else:

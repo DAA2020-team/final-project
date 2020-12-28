@@ -4,7 +4,6 @@ sys.path.append('../final-project')
 from data_structures.graph import Graph
 from data_structures.currency import Currency
 from exercise3.shortest_paths import compute_shortest_path
-from utils import str2bool
 
 import networkx as nx
 import matplotlib.pyplot as plt

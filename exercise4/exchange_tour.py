@@ -20,7 +20,7 @@ def simulated_annealing(graph: np.ndarray) -> Tuple[float, List[int]]:
     n = len(graph)
     tour = list(range(n))
     tour_cost = cost(graph, tour)
-    T = 30
+    t = 30
     alpha = 0.99
     for _ in range(25_000):  # TODO choose the best
         a = np.random.randint(0, n)
@@ -35,9 +35,9 @@ def simulated_annealing(graph: np.ndarray) -> Tuple[float, List[int]]:
         if new_cost < tour_cost:
             tour, tour_cost = new_tour, new_cost
         else:
-            if np.random.rand() < np.exp(-(new_cost - tour_cost) / T):
+            if np.random.rand() < np.exp(-(new_cost - tour_cost) / t):
                 tour, tour_cost = new_tour, new_cost
-        T = alpha * T
+        t = alpha * t
 
     return tour_cost, tour
 
@@ -123,7 +123,7 @@ def two_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     # length of provided tour
     tour_cost = cost(graph, tour)
 
-    # tracking improvemnt in tour
+    # tracking improvement in tour
     improved = True
 
     while improved:
@@ -131,11 +131,6 @@ def two_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
 
         for i in range(n):
             for j in range(i + 2, n - 1):
-
-                a = graph[tour[i]][tour[i + 1]]
-                b = graph[tour[j]][tour[j + 1]]
-                c = graph[tour[i]][tour[j]]
-                d = graph[tour[i + 1]][tour[j + 1]]
 
                 new_tour = swap_two_opt(tour.copy(), i, j)
                 new_cost = cost(graph, new_tour)
@@ -166,7 +161,7 @@ def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     # length of provided tour
     tour_cost = cost(graph, tour)
 
-    # tracking improvemnt in tour
+    # tracking improvement in tour
     improved = True
 
     while improved:
@@ -182,7 +177,7 @@ def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
 
                     # possible cases of removing three edges 
                     # and adding three
-                    deltacase = {
+                    delta_case = {
                         1: graph[a][e] + graph[b][f] - graph[a][b] - graph[e][f],
                         2: graph[a][c] + graph[b][d] - graph[a][b] - graph[c][d],
                         3: graph[c][e] + graph[d][f] - graph[c][d] - graph[e][f],
@@ -193,11 +188,11 @@ def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
                     }
 
                     # get the case with most benefit
-                    best_case = min(deltacase, key=deltacase.get)
+                    best_case = min(delta_case, key=delta_case.get)
 
-                    if deltacase[best_case] < 0:
+                    if delta_case[best_case] < 0:
                         tour = swap_three_opt(tour.copy(), i, j, k, case=best_case)
-                        tour_cost += deltacase[best_case]
+                        tour_cost += delta_case[best_case]
                         improved = True
 
     return tour_cost, tour
