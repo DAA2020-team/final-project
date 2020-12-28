@@ -16,6 +16,7 @@ import argparse
 
 def init_parameter():
     """
+    Create argument parser.
     usage: main.py [-h] [-n N] [-s S] [-v [V]]
     Currencies arbitrage opportunities
     optional arguments:
@@ -27,12 +28,12 @@ def init_parameter():
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='Currencies arbitrage opportunities')
-    parser.add_argument("-n", type=int, default=5, help="The number of currencies to insert in the graph"
+    parser.add_argument("-n", type=int, default=5, help="the number of currencies to insert in the graph"
                                                         "(randomly chosen in ISO-4217) (default: 5)")
     parser.add_argument('-s', '--source', type=str, default=None, metavar='S', dest='s',
-                        help="The code of the currency to search an arbitrage opportunity for (default: random)")
+                        help="the code of the currency to search an arbitrage opportunity for (default: random)")
     parser.add_argument("-v", "--visualize", metavar='V', const=True, nargs='?', dest='v',
-                        help="If set, it draws the graph (default: false)")
+                        help="if set, it draws the graph (default: false)")
     return parser.parse_args()
 
 

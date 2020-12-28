@@ -2,11 +2,9 @@ import sys
 sys.path.append('../final-project')
 
 from data_structures.currency import Currency
-from data_structures.min_heap_priority_queue import HeapPriorityQueue
-from utils import str2bool
 
 from iso4217 import Currency as iso_currency
-from random import random, shuffle, seed
+from random import random, shuffle
 from typing import Set, List, Dict, Tuple
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -16,6 +14,7 @@ import argparse
 
 from exercise4.exchange_tour import simulated_annealing, two_opt, three_opt, tour_to_string
 
+
 global technique
 OVER_COST = 10 ** 10
 technique = 'SA'
@@ -23,30 +22,42 @@ technique = 'SA'
 
 def init_parameter():
     """
-    usage: main.py [-h] [-n N] [-s S] [-v [V]]
-    Currencies arbitrage opportunities
+    Create argument parser.
+    usage: main.py [-h] [-i {custom,random}] [-n N] [-t {sa,2opt,3opt} [{sa,2opt,3opt} ...]] [-v [V]]
+    Currencies exchange tour
     optional arguments:
-      -h, --help                show this help message and exit
-      -n N                      the number of currencies to insert in the graph(randomly chosen in ISO4217)
-                                (default: 5)
-      -s S, --source S          the code of the currency to search an arbitrage opportunity for (default: random)
-      -v [V], --visualize [V]   if set to true, it draws the graph (default: false)
-    :return: input arguments
+      -h, --help            show this help message and exit
+      -i {custom,random}, --input {custom,random}
+                            where the input set of currencies comes from.
+                            If 'custom', the set of currencies is loaded by the create_custom_currencies() function.
+                            If 'random', the set of currencies is randomly chosen in ISO-4217.
+                            (default: custom)
+      -n N                  the number of currencies to insert in the graph (randomly chosen in ISO-4217).
+                            It is only effective if the input is 'random'.
+                            (default: 100)
+      -t {sa,2opt,3opt} [{sa,2opt,3opt} ...], --technique {sa,2opt,3opt} [{sa,2opt,3opt} ...]
+                            the technique to use in order to find an exchange tour of minimal rate.
+                            sa stands for Simulated Annealing; 2opt stands for 2-Optimal; 3opt stands for 3-Optimal.
+                            (default: SA)
+      -v [V], --verbose [V]
+                            if set, it prints the exchange tour and the execution time. (default: false)
     """
     parser = argparse.ArgumentParser(description='Currencies exchange tour')
     parser.add_argument("-i", "--input", type=str, choices=['custom', 'random'], default='custom', dest='i',
-                        help="Where the input set of currencies comes from. "
+                        help="where the input set of currencies comes from. "
                              "If 'custom', the set of currencies is loaded by the create_custom_currencies() function. "
                              "If 'random', the set of currencies is randomly chosen in ISO-4217. (default: custom)")
     parser.add_argument("-n", type=int, default=100,
-                        help="The number of currencies to insert in the graph (randomly chosen in ISO-4217)."
+                        help="the number of currencies to insert in the graph (randomly chosen in ISO-4217). "
                              "It is only effective if the input is 'random'. (default: 100)")
-    parser.add_argument('-t', '--technique', type=str, choices=['SA', '2-OPT', '3-OPT'], default='SA', dest='t',
-                        help='The technique to use in order to find an exchange tour of minimal rate.'
-                             'SA stands for Simulated Annealing;'
-                             '2-OPT stands for 2-Optimal;'
-                             '3-OPT stands for 3-Optimal;'
-                             '(default: SA)')
+    parser.add_argument('-t', '--technique', type=str, choices=['sa', '2opt', '3opt'], default=('sa', ), nargs='+',
+                        dest='t', help='the technique to use in order to find an exchange tour of minimal rate. '
+                                       'sa stands for Simulated Annealing; '
+                                       '2opt stands for 2-Optimal; '
+                                       '3opt stands for 3-Optimal. '
+                                       '(default: SA)')
+    parser.add_argument("-v", "--verbose", metavar='V', const=True, nargs='?', dest='v',
+                        help="if set, it prints the exchange tour and the execution time. (default: false)")
     return parser.parse_args()
 
 
@@ -141,7 +152,6 @@ def create_graph_from_currencies(currencies: List[Currency]) -> Tuple[Dict[int, 
 
 def find_exchange_tour(currencies: Set[Currency]) -> Tuple[np.ndarray, float, List[Currency]]:
     ids, graph = create_graph_from_currencies(list(currencies))
-    print(technique)
 
     if technique == 'SA':
         rate, exchange_tour = simulated_annealing(graph)
@@ -153,19 +163,36 @@ def find_exchange_tour(currencies: Set[Currency]) -> Tuple[np.ndarray, float, Li
     return graph, rate, [ids[step] for step in exchange_tour]
 
 
-def main(i='custom', n=100, t='SA'):
+def main(i='custom', n=100, t=('SA', ), verbose=False):
+    global technique
+
     if i == 'custom':
         currencies = create_custom_curencies()
     else:
         currencies = create_currencies(n)
-    graph, rate, exchange_tour = find_exchange_tour(set(currencies))
-    if rate >= OVER_COST:
-        print("Exchange tour not found")
-    else:
-        print(f"Exchange tour of rate {rate : .4f} found: " + tour_to_string(exchange_tour))
+
+    for algorithm in t:
+        technique = algorithm
+        print(algorithm, end='', flush=True)
+        t0 = perf_counter()
+        graph, rate, exchange_tour = find_exchange_tour(set(currencies))
+        t1 = perf_counter()
+
+        if verbose:
+            print(f', {t1 - t0 : .4f}s')
+        else:
+            print(':')
+
+        if rate >= OVER_COST:
+            print("Exchange tour not found")
+        else:
+            print(f"Exchange tour of rate {rate : .4f} found", end='')
+            if verbose:
+                print(': ', tour_to_string(exchange_tour))
+            else:
+                print('.\n')
 
 
 if __name__ == '__main__':
     args = init_parameter()
-    technique = args.t
-    main(args.i, args.n)
+    main(args.i, args.n, args.t, args.v)
