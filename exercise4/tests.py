@@ -39,9 +39,9 @@ for _ in trange(N):
     graph = create_graph_from_currencies(currencies)[1]
     for algorithm in algorithms:
         if algorithm == "SA":
-            cost, time = call_and_time(algorithm, funcs[algorithm], graph)
+            cost, time = call_and_time(funcs[algorithm], graph)
         else:
-            cost, time = call_and_time(algorithm, funcs[algorithm], graph, list(range(len(graph))))
+            cost, time = call_and_time(funcs[algorithm], graph, list(range(len(graph))))
         if cost > OVER_COST:
             failures[algorithm] += 1
         else:
