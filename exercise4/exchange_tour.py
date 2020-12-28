@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, List, Dict
+from typing import Tuple, List
 
 from data_structures.currency import Currency
 
@@ -118,7 +118,7 @@ def two_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     n = len(tour)
     if n <= 2:
         # no cycle possible
-        return tour, 0
+        return 0.0, tour
 
     # length of provided tour
     tour_cost = cost(graph, tour)
@@ -161,7 +161,7 @@ def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     n = len(tour)
     if n <= 2:
         # no cycle possible
-        return [], 0
+        return 0.0, []
 
     # length of provided tour
     tour_cost = cost(graph, tour)
