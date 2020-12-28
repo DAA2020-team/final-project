@@ -18,7 +18,7 @@ def sort_dict(x):
     return dict(sorted(x.items(), key=lambda item: item[1]))
 
 
-def call_and_time(name, func, *args):
+def call_and_time(func, *args):
     t0 = perf_counter()
     tour_cost, _ = func(*args)
     t1 = perf_counter()
