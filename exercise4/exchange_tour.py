@@ -1,106 +1,110 @@
 import numpy as np
-from tqdm import tqdm
-from itertools import combinations
+from typing import Tuple, List, Dict
+
+from data_structures.currency import Currency
 
 
-def TSP_SA(graph):
-    s = list(range(len(graph)))
-    c = cost(graph, s)
+def tour_to_string(tour: List[Currency]) -> str:
+    return "[" + " -> ".join([currency._code for currency in tour] + [tour[0]._code]) + "]"
+
+
+def cost(graph: np.ndarray, tour: List[int]) -> float:
+    tour_cost = 0
+    for i in range(len(tour) - 1):
+        tour_cost += graph[tour[i]][tour[i + 1]]
+    tour_cost += graph[tour[len(tour) - 1]][tour[0]]
+    return tour_cost
+
+
+def simulated_annealing(graph: np.ndarray) -> Tuple[float, List[int]]:
+    n = len(graph)
+    tour = list(range(n))
+    tour_cost = cost(graph, tour)
     T = 30
     alpha = 0.99
-    for _ in range(30_000):
-        n = np.random.randint(0, len(graph))
+    for _ in range(40_000):
+        a = np.random.randint(0, n)
 
         while True:
-            m = np.random.randint(0, len(graph))
-            if n != m:
+            b = np.random.randint(0, n)
+            if a != b:
                 break
 
-        s1 = swap(s, m, n)
-        c1 = cost(graph, s1)
-        if c1 < c:
-            s, c = s1, c1
+        new_tour = swap_simulated_annealing(tour, b, a)
+        new_cost = cost(graph, new_tour)
+        if new_cost < tour_cost:
+            tour, tour_cost = new_tour, new_cost
         else:
-            if np.inf not in (c, c1) and np.random.rand() < np.exp(-(c1 - c) / T):
-                s, c = s1, c1
+            if np.random.rand() < np.exp(-(new_cost - tour_cost) / T):
+                tour, tour_cost = new_tour, new_cost
         T = alpha * T
 
-    return s, c
+    return tour_cost, tour
 
 
-def swap(s, m, n):
+def swap_simulated_annealing(tour: List[int], m: int, n: int) -> List[int]:
     i, j = min(m, n), max(m, n)
-    s1 = s.copy()
+    new_tour = tour.copy()
     while i < j:
-        s1[i], s1[j] = s1[j], s1[i]
+        new_tour[i], new_tour[j] = new_tour[j], new_tour[i]
         i += 1
         j -= 1
-    return s1
+    return new_tour
 
 
-def cost(graph, s):
-    cost_ = 0
-    for i in range(len(s) - 1):
-        cost_ += graph[s[i]][s[i + 1]]
-    cost_ += graph[s[len(s) - 1]][s[0]]
-    return cost_
+def swap_two_opt(tour: List[int], i: int, j: int) -> List[int]:
+    """Method to swap two edges and replace with their cross."""
+
+    new_tour = tour[:i + 1]
+    new_tour.extend(reversed(tour[i + 1:j + 1]))
+    new_tour.extend(tour[j + 1:])
+
+    return new_tour
 
 
-def swapEdgesTwoOPT(tour, i, j):
-    """
-    Method to swap two edges and replace with
-    their cross.
-    """
-    newtour = tour[:i + 1]
-    newtour.extend(reversed(tour[i + 1:j + 1]))
-    newtour.extend(tour[j + 1:])
-
-    return newtour
-
-
-def swapEdgesThreeOPT(tour, i, j, k, case):
+def swap_three_opt(tour: List[int], i: int, j: int, k: int, case: int) -> List[int]:
     """Method to swap edges from 3-OPT"""
 
     if case == 1:
-        newtour = swapEdgesTwoOPT(tour.copy(), i, k)
+        new_tour = swap_two_opt(tour.copy(), i, k)
 
     elif case == 2:
-        newtour = swapEdgesTwoOPT(tour.copy(), i, j)
+        new_tour = swap_two_opt(tour.copy(), i, j)
 
     elif case == 3:
-        newtour = swapEdgesTwoOPT(tour.copy(), j, k)
+        new_tour = swap_two_opt(tour.copy(), j, k)
 
     elif case == 4:
-        newtour = tour[:i + 1]
-        newtour.extend(tour[j + 1:k + 1])
-        newtour.extend(reversed(tour[i + 1:j + 1]))
-        newtour.extend(tour[k + 1:])
+        new_tour = tour[:i + 1]
+        new_tour.extend(tour[j + 1:k + 1])
+        new_tour.extend(reversed(tour[i + 1:j + 1]))
+        new_tour.extend(tour[k + 1:])
 
     elif case == 5:
-        newtour = tour[:i + 1]
-        newtour.extend(reversed(tour[j + 1:k + 1]))
-        newtour.extend(tour[i + 1:j + 1])
-        newtour.extend(tour[k + 1:])
+        new_tour = tour[:i + 1]
+        new_tour.extend(reversed(tour[j + 1:k + 1]))
+        new_tour.extend(tour[i + 1:j + 1])
+        new_tour.extend(tour[k + 1:])
 
     elif case == 6:
-        newtour = tour[:i + 1]
-        newtour.extend(reversed(tour[i + 1:j + 1]))
-        newtour.extend(reversed(tour[j + 1:k + 1]))
-        newtour.extend(tour[k + 1:])
+        new_tour = tour[:i + 1]
+        new_tour.extend(reversed(tour[i + 1:j + 1]))
+        new_tour.extend(reversed(tour[j + 1:k + 1]))
+        new_tour.extend(tour[k + 1:])
 
     elif case == 7:
-        newtour = tour[:i + 1]
-        newtour.extend(tour[j + 1:k + 1])
-        newtour.extend(tour[i + 1:j + 1])
-        newtour.extend(tour[k + 1:])
+        new_tour = tour[:i + 1]
+        new_tour.extend(tour[j + 1:k + 1])
+        new_tour.extend(tour[i + 1:j + 1])
+        new_tour.extend(tour[k + 1:])
 
     else:
-        newtour = []
+        new_tour = []
 
-    return newtour
+    return new_tour
 
 
-def twoOPT(graph, tour):
+def two_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     """
     Method to create new tour using 2OPT
     args:
@@ -108,7 +112,7 @@ def twoOPT(graph, tour):
     return:
         tour: List of nodes forming a cycle
             Two optimal tour
-        tourlen: int/float
+        tour_cost: int/float
             Length of two optimal tour
     """
     n = len(tour)
@@ -133,17 +137,17 @@ def twoOPT(graph, tour):
                 c = graph[tour[i]][tour[j]]
                 d = graph[tour[i + 1]][tour[j + 1]]
 
-                new_tour = swapEdgesTwoOPT(tour.copy(), i, j)
+                new_tour = swap_two_opt(tour.copy(), i, j)
                 new_cost = cost(graph, new_tour)
                 if new_cost < tour_cost:
                     improved = True
                     tour = new_tour
                     tour_cost = new_cost
 
-    return tour, tour_cost
+    return tour_cost, tour
 
 
-def threeOPT(graph, tour):
+def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     """
     Method to create new tour using 3OPT
     args:
@@ -151,7 +155,7 @@ def threeOPT(graph, tour):
     return:
         tour: List of nodes forming a cycle
             Three optimal tour
-        tourlen: int/float
+        tour_cost: int/float
             Length of three optimal tour
     """
     n = len(tour)
@@ -160,7 +164,7 @@ def threeOPT(graph, tour):
         return [], 0
 
     # length of provided tour
-    tourlen = cost(graph, tour)
+    tour_cost = cost(graph, tour)
 
     # tracking improvemnt in tour
     improved = True
@@ -189,29 +193,11 @@ def threeOPT(graph, tour):
                     }
 
                     # get the case with most benefit
-                    bestcase = min(deltacase, key=deltacase.get)
+                    best_case = min(deltacase, key=deltacase.get)
 
-                    if deltacase[bestcase] < 0:
-                        # print(deltacase[bestcase], i, j, k, bestcase)
-                        tour = swapEdgesThreeOPT(tour.copy(), i, j, k, case=bestcase)
-                        # print(self.calculateTourLength(tour), tourlen + deltacase[bestcase])
-                        tourlen += deltacase[bestcase]
+                    if deltacase[best_case] < 0:
+                        tour = swap_three_opt(tour.copy(), i, j, k, case=best_case)
+                        tour_cost += deltacase[best_case]
                         improved = True
 
-    return tour, tourlen
-
-
-"""
-0: CNY
-1: EUR
-2: GBP
-3: JPY
-4: USD
-"""
-g = [
-    [0, 0.87, 0.05, 0.11, float('inf')],
-    [0.87, 0, 0.31, float('inf'), 0.3],
-    [0.05, 0.31, 0, float('inf'), 0.09],
-    [0.11, float('inf'), float('inf'), 0, 0.43],
-    [float('inf'), 0.3, 0.09, 0.43, 0]
-]
+    return tour_cost, tour
