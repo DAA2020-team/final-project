@@ -7,7 +7,7 @@ from time import perf_counter
 from pickle import dump
 import os
 
-from exercise4.tsp import twoOPT, threeOPT, TSP_SA
+from exercise4.exchange_tour import two_opt, three_opt, simulated_annealing
 from exercise4.main import create_currencies, create_graph_from_currencies, OVER_COST
 
 
@@ -20,16 +20,16 @@ def sort_dict(x):
 
 def call_and_time(name, func, *args):
     t0 = perf_counter()
-    _, tour_cost = func(*args)
+    tour_cost, _ = func(*args)
     t1 = perf_counter()
     return tour_cost, t1 - t0
 
 
 algorithms = ("2-OPT", "3-OPT", "SA")
 funcs = {
-    "2-OPT": twoOPT,
-    "3-OPT": threeOPT,
-    "SA": TSP_SA
+    "2-OPT": two_opt,
+    "3-OPT": three_opt,
+    "SA": simulated_annealing
 }
 results = {algorithm: [] for algorithm in algorithms}
 times = {algorithm: [] for algorithm in algorithms}
@@ -67,14 +67,14 @@ failures = sort_dict(failures)
 for algorithm, failure in failures.items():
     print(f"{algorithm}: {failure}")
 
-filename = f"results_{N}.dat"
+filename = f"results_N-{N}_nt-25_000.dat"
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', filename), 'wb') as f:
     dump(results, f)
 
-filename = f"times_{N}.dat"
+filename = f"times_N-{N}_nt-25_000.dat"
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', filename), 'wb') as f:
     dump(times, f)
 
-filename = f"failures_{N}.dat"
+filename = f"failures_N-{N}_nt-25_000.dat"
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', filename), 'wb') as f:
     dump(failures, f)

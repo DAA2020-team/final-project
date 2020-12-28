@@ -22,7 +22,7 @@ def simulated_annealing(graph: np.ndarray) -> Tuple[float, List[int]]:
     tour_cost = cost(graph, tour)
     T = 30
     alpha = 0.99
-    for _ in range(40_000):
+    for _ in range(25_000):  # TODO choose the best
         a = np.random.randint(0, n)
 
         while True:
