@@ -27,12 +27,12 @@ def init_parameter():
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='Currencies arbitrage opportunities')
-    parser.add_argument("-n", type=int, default=5, help="the number of currencies to insert in the graph"
+    parser.add_argument("-n", type=int, default=5, help="The number of currencies to insert in the graph"
                                                         "(randomly chosen in ISO-4217) (default: 5)")
     parser.add_argument('-s', '--source', type=str, default=None, metavar='S', dest='s',
-                        help="the code of the currency to search an arbitrage opportunity for (default: random)")
-    parser.add_argument("-v", "--visualize", type=str2bool, default=False, metavar='V', const=True, nargs='?',
-                        help="if set to true, it draws the graph (default: false)")
+                        help="The code of the currency to search an arbitrage opportunity for (default: random)")
+    parser.add_argument("-v", "--visualize", metavar='V', const=True, nargs='?', dest='v',
+                        help="If set, it draws the graph (default: false)")
     return parser.parse_args()
 
 
@@ -133,7 +133,7 @@ def print_path(path: List[Graph.Edge]):
     print(f"The cycle {cycle} is an arbitrage opportunity for {path[0].endpoints()[0]} of cost {cycle_weight : .2f}")
 
 
-def main(n: int, s=None, visualize=False):
+def main(n: int, s=None, v=False):
     currencies = create_currencies(n)
     if s is None:
         s = choice(list(currencies))
@@ -144,10 +144,10 @@ def main(n: int, s=None, visualize=False):
         print_path(cycle)
     else:
         print(f"The graph does not contain arbitrage opportunities for {s._code}")
-    if visualize:
+    if v:
         show_graph(graph)
 
 
 if __name__ == '__main__':
     args = init_parameter()
-    main(args.n, args.s, args.visualize)
+    main(args.n, args.s, args.v)

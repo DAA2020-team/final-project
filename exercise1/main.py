@@ -23,9 +23,9 @@ def init_parameter():
     :return: input arguments
     """
     parser = argparse.ArgumentParser(description='(k, c1, c2)-cover for MultiWaySearchTree storing currency codes')
-    parser.add_argument("-k", type=int, default=1, help="the number of codes to cover at least")
-    parser.add_argument("-c1", type=str, default='AAA', help="lower bound for the codes in the cover")
-    parser.add_argument("-c2", type=str, default='ZZZ', help="upper bound for the codes in the cover")
+    parser.add_argument("-k", type=int, default=1, help="The number of codes to cover at least")
+    parser.add_argument("-c1", type=str, default='AAA', help="Lower bound for the codes in the cover")
+    parser.add_argument("-c2", type=str, default='ZZZ', help="Upper bound for the codes in the cover")
     return parser.parse_args()
 
 

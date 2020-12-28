@@ -21,9 +21,9 @@ def init_parameter():
     """
     parser = argparse.ArgumentParser(description='Finds all combinations to change an amount.')
     parser.add_argument("-r", "--amount", metavar="R", dest="r", type=float, default=1.0,
-                        help="the amount to change (default: 1.0)")
+                        help="The amount to change (default: 1.0)")
     parser.add_argument("-d", "--denominations", metavar="D", dest="d", nargs="+", type=float, default=None,
-                        help="the denominations used to change (default: from 0.01 to 500)")
+                        help="The denominations used to change (default: from 0.01 to 500)")
     return parser.parse_args()
 
 
