@@ -4,6 +4,11 @@ from typing import Tuple, List
 from data_structures.currency import Currency
 
 
+SA_NAME = 'sa'
+TWO_OPT_NAME = '2opt'
+THREE_OPT_NAME = '3opt'
+
+
 def tour_to_string(tour: List[Currency]) -> str:
     return "[" + " -> ".join([currency._code for currency in tour] + [tour[0]._code]) + "]"
 

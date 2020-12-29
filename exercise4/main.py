@@ -12,7 +12,8 @@ import numpy as np
 from time import perf_counter
 import argparse
 
-from exercise4.exchange_tour import simulated_annealing, two_opt, three_opt, tour_to_string
+from exercise4.exchange_tour import (simulated_annealing, two_opt, three_opt, tour_to_string,
+                                     SA_NAME, TWO_OPT_NAME, THREE_OPT_NAME)
 
 
 global technique
@@ -37,7 +38,7 @@ def init_parameter():
       -t {sa,2opt,3opt} [{sa,2opt,3opt} ...], --technique {sa,2opt,3opt} [{sa,2opt,3opt} ...]
                             the technique to use in order to find an exchange tour of minimal rate.
                             sa stands for Simulated Annealing; 2opt stands for 2-Optimal; 3opt stands for 3-Optimal.
-                            (default: SA)
+                            (default: sa)
       -v [V], --verbose [V]
                             if set, it prints the exchange tour and the execution time. (default: false)
     """
@@ -49,12 +50,13 @@ def init_parameter():
     parser.add_argument("-n", type=int, default=100,
                         help="the number of currencies to insert in the graph (randomly chosen in ISO-4217). "
                              "It is only effective if the input is 'random'. (default: 100)")
-    parser.add_argument('-t', '--technique', type=str, choices=['sa', '2opt', '3opt'], default=('sa', ), nargs='+',
-                        dest='t', help='the technique to use in order to find an exchange tour of minimal rate. '
-                                       'sa stands for Simulated Annealing; '
-                                       '2opt stands for 2-Optimal; '
-                                       '3opt stands for 3-Optimal. '
-                                       '(default: sa)')
+    parser.add_argument('-t', '--technique', type=str, choices=[SA_NAME, TWO_OPT_NAME, THREE_OPT_NAME],
+                        default=(SA_NAME, ), nargs='+', dest='t',
+                        help='the technique to use in order to find an exchange tour of minimal rate. '
+                             f'{SA_NAME} stands for Simulated Annealing; '
+                             f'{TWO_OPT_NAME} stands for 2-Optimal; '
+                             f'{THREE_OPT_NAME} stands for 3-Optimal. '
+                             f'(default: {SA_NAME})')
     parser.add_argument("-v", "--verbose", metavar='V', const=True, nargs='?', dest='v',
                         help="if set, it prints the exchange tour and the execution time. (default: false)")
     return parser.parse_args()
@@ -181,11 +183,11 @@ def find_exchange_tour(currencies: Set[Currency]) -> Tuple[np.ndarray, float, Li
     """
     ids, graph = create_graph_from_currencies(list(currencies))
 
-    if technique == 'sa':
+    if technique == SA_NAME:
         rate, exchange_tour = simulated_annealing(graph)
-    elif technique == '2opt':
+    elif technique == TWO_OPT_NAME:
         rate, exchange_tour = two_opt(graph, list(range(len(graph))))
-    elif technique == '3opt':
+    elif technique == THREE_OPT_NAME:
         rate, exchange_tour = three_opt(graph, list(range(len(graph))))
     else:
         raise ValueError("Technique unknown.")
@@ -193,12 +195,12 @@ def find_exchange_tour(currencies: Set[Currency]) -> Tuple[np.ndarray, float, Li
     return graph, rate, [ids[step] for step in exchange_tour]
 
 
-def main(i='custom', n=100, t=('sa', ), verbose=False):
+def main(i='custom', n=100, t=(SA_NAME, ), verbose=False):
     global technique
     algorithm_names = {
-        'sa': 'Simulated Annealing',
-        '2opt': '2-Optimal',
-        '3opt': '3-Optimal'
+        SA_NAME: 'Simulated Annealing',
+        TWO_OPT_NAME: '2-Optimal',
+        THREE_OPT_NAME: '3-Optimal'
     }
 
     if i == 'custom':
