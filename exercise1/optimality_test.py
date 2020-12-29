@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../final-project')
+
 from exercise1.main import build_tree, compute_cover, get_number_of_useful_items
 import itertools
 from statistics import mean

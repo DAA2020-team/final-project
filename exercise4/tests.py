@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../final-project')
+sys.path.append('../final-project')
 
 from tqdm import trange
 from statistics import mean
@@ -67,14 +67,14 @@ failures = sort_dict(failures)
 for algorithm, failure in failures.items():
     print(f"{algorithm}: {failure}")
 
-filename = f"results_N-{N}_nt-25_000.dat"
+filename = f"results_N-{N}.dat"
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', filename), 'wb') as f:
     dump(results, f)
 
-filename = f"times_N-{N}_nt-25_000.dat"
+filename = f"times_N-{N}.dat"
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', filename), 'wb') as f:
     dump(times, f)
 
-filename = f"failures_N-{N}_nt-25_000.dat"
+filename = f"failures_N-{N}.dat"
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', filename), 'wb') as f:
     dump(failures, f)
