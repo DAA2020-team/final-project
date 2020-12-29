@@ -185,4 +185,6 @@ def main(n: int, s=None, v=False):
 
 if __name__ == '__main__':
     args = init_parameter()
+    if not args.n >= 2:
+        raise argparse.ArgumentTypeError("N must be at least 2.")
     main(args.n, args.s, args.v)

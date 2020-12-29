@@ -54,7 +54,7 @@ def init_parameter():
                                        'sa stands for Simulated Annealing; '
                                        '2opt stands for 2-Optimal; '
                                        '3opt stands for 3-Optimal. '
-                                       '(default: SA)')
+                                       '(default: sa)')
     parser.add_argument("-v", "--verbose", metavar='V', const=True, nargs='?', dest='v',
                         help="if set, it prints the exchange tour and the execution time. (default: false)")
     return parser.parse_args()
@@ -214,11 +214,7 @@ def main(i='custom', n=100, t=('sa', ), verbose=False):
         t0 = perf_counter()
         graph, rate, exchange_tour = find_exchange_tour(set(currencies))
         t1 = perf_counter()
-
-        if verbose:
-            print(f', {t1 - t0 : .4f}s')
-        else:
-            print(':')
+        print(f', {t1 - t0 : .4f}s')
 
         if rate >= OVER_COST:
             print("Exchange tour not found")
@@ -232,4 +228,6 @@ def main(i='custom', n=100, t=('sa', ), verbose=False):
 
 if __name__ == '__main__':
     args = init_parameter()
+    if not args.n >= 2:
+        raise argparse.ArgumentTypeError("N must be at least 2.")
     main(args.i, args.n, tuple(set(args.t)), args.v)
