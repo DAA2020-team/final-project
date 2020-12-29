@@ -68,9 +68,9 @@ The implementation of the `denominations_combinations()` function is in the file
 3. You can test the algorithm with different `n` and `s` parameters with the command `python exercise3/main.py -n N -s S -v`, where:
     * `N` is the number of currencies to insert in the graph
     * `S` is the code of the currency to search an arbitrage opportunity for
-    * `-v` will draw the graph if set to `True`
+    * `-v` will draw the graph if set
         * If not specified, this flag is `False` and no graph will be shown
-    * For example, `python exercise3/main.py -n 8 -s EUR -v` will search an arbitrage opportunity for EUR in a graph of 8 currencies, visualizing the graph 
+    * For example, `python exercise3/main.py -n 8 -s EUR -v` will search for an arbitrage opportunity for EUR in a graph of 8 currencies, visualizing the graph 
         * A value smaller or equal to 5 is advisable for `N` if you want to see the graph
     * Run `python exercise3/main.py --help` to show usage suggestions
 
@@ -86,12 +86,31 @@ The implementation of the `find_arbitrage_opportunity()` function is in the file
       * `-i custom` will load the curriences defined in the `create_custom_currencies()` function
       * `-i random` will choose `N` different currencies from the ISO-4217 standard
       * If not specified, `-i custom` is the default option
-   * `-n N` specifies how many currencies will be chosen if the option `-i random` is option
+   * `-n N` specifies how many currencies will be chosen if the option `-i random` is specified
       * Otherwise, this option is not effective
       * By default, `N` is 100
+   * `-t {'sa','2opt','3opt'}` allows specifying one or more Local Search techniques to solve the problem:
+      * `sa` uses Simulated Annealing
+      * `2opt` uses 2-Optimal
+      * `3opt` uses 3-Optimal
+      * By default, `sa` is chosen
+   *  `-v` will print the execution time and the cycle representing the exchange tour
+      * If not specified, this flag is `False` and nothing will be printed
+   * For example, `python exercise4/main.py -i random -n 50 -t sa 2opt -v` will search for an exchange tour in a graph of 50 random currencies, using the techniques Simulated Annealing and 2-Optimal, printing the cycle and the execution time for both of them
+   * Run `python exercise4/main.py --help` to show usage suggestions
 
-#### Custom set of currencies
-   
+The implementation of the `find_exchange_tour()` function is in the file [exercise4/main.py](https://github.com/DAA2020-team/final-project/blob/master/exercise4/main.py).
+
+#### [IMPORTANT] Custom set of currencies
+
+If you want to try the algorithm on a custom set of currencies, you have to modify the `create_custom_currencies()` function (it is in the file [exercise4/main.py](https://github.com/DAA2020-team/final-project/blob/master/exercise4/main.py)), declaring your own currencies and change rates.
+It is important that the custom code will return a ***set*** of Currency objects.
+Then, just change directory to the root folder and run
+
+```shell
+python exercise4/main.py
+```
+
 ## Other resources
 
 In the `resources` folder there is the [primes.bin](https://github.com/DAA2020-team/final-project/blob/master/resources/primes.bin) file, which contains prime numbers used by the [DoubleHashingHashMap](https://github.com/DAA2020-team/final-project/blob/master/data_structures/double_hashing_hash_map.py).
