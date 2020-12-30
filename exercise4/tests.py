@@ -6,8 +6,9 @@ from statistics import mean
 from time import perf_counter
 from pickle import dump
 import os
+from random import shuffle
 
-from exercise4.exchange_tour import two_opt, three_opt, simulated_annealing
+from exercise4.exchange_tour import two_opt, three_opt, simulated_annealing, sa_two_opt
 from exercise4.main import create_currencies, create_graph_from_currencies, OVER_COST
 
 
@@ -25,11 +26,12 @@ def call_and_time(func, *args):
     return tour_cost, t1 - t0
 
 
-algorithms = ("2-OPT", "3-OPT", "SA")
+algorithms = ("2-OPT", "3-OPT", "SA", "SA+2-OPT")
 funcs = {
     "2-OPT": two_opt,
     "3-OPT": three_opt,
-    "SA": simulated_annealing
+    "SA": simulated_annealing,
+    "SA+2-OPT": sa_two_opt
 }
 results = {algorithm: [] for algorithm in algorithms}
 times = {algorithm: [] for algorithm in algorithms}
@@ -39,6 +41,8 @@ for _ in trange(N):
     graph = create_graph_from_currencies(currencies)[1]
     for algorithm in algorithms:
         if algorithm == "SA":
+            cost, time = call_and_time(funcs[algorithm], graph)
+        elif algorithm == "SA+2-OPT":
             cost, time = call_and_time(funcs[algorithm], graph)
         else:
             cost, time = call_and_time(funcs[algorithm], graph, list(range(len(graph))))

@@ -218,3 +218,8 @@ def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
                         improved = True
 
     return tour_cost, tour
+
+
+def sa_two_opt(graph: np.ndarray) -> Tuple[float, List[int]]:
+    _, tour = simulated_annealing(graph)
+    return two_opt(graph, tour)
