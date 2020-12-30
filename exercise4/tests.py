@@ -11,7 +11,7 @@ from exercise4.exchange_tour import two_opt, three_opt, simulated_annealing
 from exercise4.main import create_currencies, create_graph_from_currencies, OVER_COST
 
 
-N = 1000
+N = 10
 
 
 def sort_dict(x):
