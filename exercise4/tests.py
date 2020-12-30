@@ -1,18 +1,17 @@
 import sys
-sys.path.append('../final-project')
+sys.path.append('../../final-project')
 
 from tqdm import trange
 from statistics import mean
 from time import perf_counter
 from pickle import dump
 import os
-from random import shuffle
 
 from exercise4.exchange_tour import two_opt, three_opt, simulated_annealing, sa_two_opt
 from exercise4.main import create_currencies, create_graph_from_currencies, OVER_COST
 
 
-N = 10
+N = 1000
 
 
 def sort_dict(x):
