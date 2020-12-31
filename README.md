@@ -81,7 +81,7 @@ The implementation of the `find_arbitrage_opportunity()` function is in the file
 1. Change directory to the root folder.
 2. Run `python exercise4/main.py`
    * This will test the function creating an undirected graph starting from the 5 curriences defined in the `create_custom_currencies()` function, searching for an exchange tour of minimal rate using a Simulated Annealing Local Search algorithm.
-3. With the command `python exercise4/main.py -i {'custom','random'} -n N -t {'sa','2opt','3opt'} -v` you can change different parameters:
+3. With the command `python exercise4/main.py -i {'custom','random'} -n N -t {'sa','2opt','3opt','sa2opt'} -v` you can change different parameters:
    * `-i` will change where the input set of currencies comes from:
       * `-i custom` will load the curriences defined in the `create_custom_currencies()` function
       * `-i random` will choose `N` different currencies from the ISO-4217 standard
@@ -89,7 +89,7 @@ The implementation of the `find_arbitrage_opportunity()` function is in the file
    * `-n N` specifies how many currencies will be chosen if the option `-i random` is specified
       * Otherwise, this option is not effective
       * By default, `N` is 100
-   * `-t {'sa','2opt','3opt', 'sa2opt'}` allows specifying one or more Local Search techniques to solve the problem:
+   * `-t {'sa','2opt','3opt','sa2opt'}` allows specifying one or more Local Search techniques to solve the problem:
       * `sa` uses Simulated Annealing
       * `2opt` uses 2-Optimal
       * `3opt` uses 3-Optimal
