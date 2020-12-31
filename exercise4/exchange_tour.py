@@ -7,6 +7,7 @@ from data_structures.currency import Currency
 SA_NAME = 'sa'
 TWO_OPT_NAME = '2opt'
 THREE_OPT_NAME = '3opt'
+SA_2OPT_NAME = 'sa2opt'
 
 
 def tour_to_string(tour: List[Currency]) -> str:

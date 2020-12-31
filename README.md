@@ -89,11 +89,12 @@ The implementation of the `find_arbitrage_opportunity()` function is in the file
    * `-n N` specifies how many currencies will be chosen if the option `-i random` is specified
       * Otherwise, this option is not effective
       * By default, `N` is 100
-   * `-t {'sa','2opt','3opt'}` allows specifying one or more Local Search techniques to solve the problem:
+   * `-t {'sa','2opt','3opt', 'sa2opt'}` allows specifying one or more Local Search techniques to solve the problem:
       * `sa` uses Simulated Annealing
       * `2opt` uses 2-Optimal
       * `3opt` uses 3-Optimal
-      * By default, `sa` is chosen
+      * `sa2opt` uses the tour returned by Simulated Annealing as input to the 2-Optiaml algorithm  
+      * By default, `sa2opt` is chosen
    *  `-v` will print the execution time and the cycle representing the exchange tour
       * If not specified, this flag is `False` and nothing will be printed
    * For example, `python exercise4/main.py -i random -n 50 -t sa 2opt -v` will search for an exchange tour in a graph of 50 random currencies, using the techniques Simulated Annealing and 2-Optimal, printing the cycle and the execution time for both of them

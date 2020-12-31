@@ -12,8 +12,8 @@ import numpy as np
 from time import perf_counter
 import argparse
 
-from exercise4.exchange_tour import (simulated_annealing, two_opt, three_opt, tour_to_string,
-                                     SA_NAME, TWO_OPT_NAME, THREE_OPT_NAME)
+from exercise4.exchange_tour import (simulated_annealing, two_opt, three_opt, sa_two_opt, tour_to_string,
+                                     SA_NAME, TWO_OPT_NAME, THREE_OPT_NAME, SA_2OPT_NAME)
 
 
 global technique
@@ -23,7 +23,7 @@ OVER_COST = 10 ** 10
 def init_parameter():
     """
     Create argument parser.
-    usage: main.py [-h] [-i {custom,random}] [-n N] [-t {sa,2opt,3opt} [{sa,2opt,3opt} ...]] [-v [V]]
+    usage: main.py [-h] [-i {custom,random}] [-n N] [-t {sa,2opt,3opt,sa2opt} [{sa,2opt,3opt,sa2opt} ...]] [-v [V]]
     Currencies exchange tour
     optional arguments:
       -h, --help            show this help message and exit
@@ -35,10 +35,11 @@ def init_parameter():
       -n N                  the number of currencies to insert in the graph (randomly chosen in ISO-4217).
                             It is only effective if the input is 'random'.
                             (default: 100)
-      -t {sa,2opt,3opt} [{sa,2opt,3opt} ...], --technique {sa,2opt,3opt} [{sa,2opt,3opt} ...]
+      -t {sa,2opt,3opt,sa2opt} [{sa,2opt,3opt,sa2opt} ...], --technique {sa,2opt,3opt,sa2opt} [{sa,2opt,3opt,sa2opt} ...]
                             the technique to use in order to find an exchange tour of minimal rate.
-                            sa stands for Simulated Annealing; 2opt stands for 2-Optimal; 3opt stands for 3-Optimal.
-                            (default: sa)
+                            sa stands for Simulated Annealing; 2opt stands for 2-Optimal; 3opt stands for 3-Optimal;
+                            sa2opt uses the solution returned by Simulated Annealing as input to 2-Optimal.
+                            (default: sa2opt)
       -v [V], --verbose [V]
                             if set, it prints the exchange tour and the execution time. (default: false)
     """
@@ -50,13 +51,14 @@ def init_parameter():
     parser.add_argument("-n", type=int, default=100,
                         help="the number of currencies to insert in the graph (randomly chosen in ISO-4217). "
                              "It is only effective if the input is 'random'. (default: 100)")
-    parser.add_argument('-t', '--technique', type=str, choices=[SA_NAME, TWO_OPT_NAME, THREE_OPT_NAME],
-                        default=(SA_NAME, ), nargs='+', dest='t',
+    parser.add_argument('-t', '--technique', type=str, choices=[SA_NAME, TWO_OPT_NAME, THREE_OPT_NAME, SA_2OPT_NAME],
+                        default=(SA_2OPT_NAME, ), nargs='+', dest='t',
                         help='the technique to use in order to find an exchange tour of minimal rate. '
                              f'{SA_NAME} stands for Simulated Annealing; '
                              f'{TWO_OPT_NAME} stands for 2-Optimal; '
-                             f'{THREE_OPT_NAME} stands for 3-Optimal. '
-                             f'(default: {SA_NAME})')
+                             f'{THREE_OPT_NAME} stands for 3-Optimal; '
+                             f'{SA_2OPT_NAME} uses the solution returned by Simulated Annealing as input to 2-Optimal. '
+                             f'(default: {SA_2OPT_NAME})')
     parser.add_argument("-v", "--verbose", metavar='V', const=True, nargs='?', dest='v',
                         help="if set, it prints the exchange tour and the execution time. (default: false)")
     return parser.parse_args()
@@ -189,6 +191,8 @@ def find_exchange_tour(currencies: Set[Currency]) -> Tuple[np.ndarray, float, Li
         rate, exchange_tour = two_opt(graph, list(range(len(graph))))
     elif technique == THREE_OPT_NAME:
         rate, exchange_tour = three_opt(graph, list(range(len(graph))))
+    elif technique == SA_2OPT_NAME:
+        rate, exchange_tour = sa_two_opt(graph)
     else:
         raise ValueError("Technique unknown.")
 
@@ -200,7 +204,8 @@ def main(i='custom', n=100, t=(SA_NAME, ), verbose=False):
     algorithm_names = {
         SA_NAME: 'Simulated Annealing',
         TWO_OPT_NAME: '2-Optimal',
-        THREE_OPT_NAME: '3-Optimal'
+        THREE_OPT_NAME: '3-Optimal',
+        SA_2OPT_NAME: 'Simulated Annealing + 2-Optimal'
     }
 
     if i == 'custom':
