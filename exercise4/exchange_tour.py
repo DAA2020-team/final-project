@@ -39,7 +39,7 @@ def simulated_annealing(graph: np.ndarray) -> Tuple[float, List[int]]:
     :param graph: the graph to search an exchange tour in
     :return:
         tour_cost: the cost of the tour
-        tour: the tour
+        tour: the calculated tour
     """
     n = len(graph)
     tour = list(range(n))
@@ -132,9 +132,10 @@ def two_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     """
     Looks for the exchange tour of minimal rate using the 2-Optimal Local Search technique
     :param graph: the graph to search an exchange tour in
+    :param tour: the starting tour
     :return:
         tour_cost: the cost of the tour
-        tour: the tour
+        tour: the calculated tour
     """
     n = len(tour)
     if n <= 2:
@@ -171,9 +172,10 @@ def three_opt(graph: np.ndarray, tour: List[int]) -> Tuple[float, List[int]]:
     """
     Looks for the exchange tour of minimal rate using the 3-Optimal Local Search technique
     :param graph: the graph to search an exchange tour in
+    :param tour: the starting tour
     :return:
         tour_cost: the cost of the tour
-        tour: the tour
+        tour: the calculated tour
     """
     n = len(tour)
     if n <= 2:
